@@ -1,0 +1,32 @@
+/* App.css */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.app {
+  font-family: 'Montserrat', sans-serif;
+  color: #292929;
+}
+
+.main-content {
+  min-height: calc(100vh - 150px);
+  padding-top: 60px; /* Chiều cao của header */
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import './Header.css';
 
-function Header() {
+function Header({openLoginModal}) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -60,7 +60,7 @@ function Header() {
         </nav>
 
         <div className="auth-buttons">
-          <button className="login-btn">Đăng nhập</button>
+          <button onClick={openLoginModal} className="login-btn ">Đăng nhập</button>
           <button className="register-btn">Đăng ký</button>
         </div>
 

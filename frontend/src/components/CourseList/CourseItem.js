@@ -5,7 +5,8 @@ import './CourseItem.css';
 function CourseItem({ course }) {
   return (
     <div className="course-item">
-      <Link to={`/khoa-hoc/${course.id}`} className="course-link">
+      {/* <Link to={`/learning/${course.id}`} className="course-link"> */}
+      <Link to={`/learning`} className="course-link">
         <div className="course-thumbnail">
           <img src={course.image} alt={course.title} />
         </div>

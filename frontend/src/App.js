@@ -5,6 +5,7 @@ import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
 import Home from './pages/Home/Home';
 import LoginModal from './components/Login/LoginModal';
+import RegisterModal from './components/Register/RegisterModal';
 import RoadMap from './pages/RoadMap/RoadMap';
 import Blog from './pages/Blog/Blog';
 import Learning  from  './pages/Learning/Learning';    
@@ -28,11 +29,27 @@ function App() {
   
 //==================== Login Modal============================
 
+
+
+
+//==================== Login Modal============================
+   const [showRegisterModal, setShowRegisterModal] = useState(false);
+
+  const openRegisterModal = () => {
+    setShowRegisterModal(true);
+  };
+
+  const closeRegisterModal = () => {
+    setShowRegisterModal(false);
+  };
+  
+//==================== Register Modal============================
+
   
   return (
     <Router>
       <div className="app">
-        <Header openLoginModal={openLoginModal} />
+        <Header openLoginModal={openLoginModal} openRegisterModal = {openRegisterModal} />
         <main className="main-content">
           <Routes>
             <Route path="/" element={<Home />} />
@@ -44,6 +61,7 @@ function App() {
         <Footer />
           {/* Render the LoginModal when showLoginModal is true */}
       {showLoginModal && <LoginModal onClose={closeLoginModal} />}
+        {showRegisterModal && <RegisterModal onClose={closeRegisterModal} />}
       </div>
     </Router>
   );

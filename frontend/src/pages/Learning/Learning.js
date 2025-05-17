@@ -78,7 +78,8 @@ function Learning() {
   // Mock content for the current lesson
   const lessonContent = {
     title: lessons[currentStep - 1]?.title || 'Loading...',
-    video: 'https://example.com/video.mp4',
+    video: 'https://www.youtube.com/watch?v=MsBEu1iWsF4&list=RDMsBEu1iWsF4&start_radio=1',
+    
     content: `
       <h2>Nội dung bài học: ${lessons[currentStep - 1]?.title || ''}</h2>
       <p>Đây là phần nội dung chi tiết của bài học. Trong phần này sẽ bao gồm các kiến thức cơ bản và ví dụ minh họa để giúp bạn hiểu rõ hơn về chủ đề.</p>
@@ -157,30 +158,36 @@ function Learning() {
       {/* Main content area */}
       <div className="learning-content">
         <div className="video-container">
-          <div className="video-placeholder">
-            {/* This would be replaced with an actual video player */}
-            <div className="video-overlay">
-              <span className="play-icon">▶</span>
-            </div>
-            <img src="/api/placeholder/640/360" alt="Video thumbnail" className="video-thumbnail" />
+          <div className="video-player">
+            <iframe 
+              width="100%" 
+              height="360" 
+              src="https://www.youtube.com/embed/MsBEu1iWsF4" 
+              title="YouTube video player" 
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            ></iframe>
           </div>
-          <div className="video-controls">
-            <button className="control-button">◀◀</button>
-            <button className="control-button">◀</button>
-            <button className="control-button play">▶</button>
-            <button className="control-button">▶</button>
-            <button className="control-button">▶▶</button>
-            <div className="video-progress">
-              <div className="progress-bar">
-                <div className="progress-fill" style={{ width: '30%' }}></div>
-              </div>
-              <span className="time-display">04:22 / 14:35</span>
-            </div>
-            <button className="control-button">🔊</button>
-            <button className="control-button">⚙️</button>
-            <button className="control-button">⤢</button>
-          </div>
-        </div>
+
+  {/* <div className="video-controls">
+    <button className="control-button">◀◀</button>
+    <button className="control-button">◀</button>
+    <button className="control-button play">▶</button>
+    <button className="control-button">▶</button>
+    <button className="control-button">▶▶</button>
+    <div className="video-progress">
+      <div className="progress-bar">
+        <div className="progress-fill" style={{ width: '30%' }}></div>
+      </div>
+      <span className="time-display">04:22 / 14:35</span>
+    </div>
+    <button className="control-button">🔊</button>
+    <button className="control-button">⚙️</button>
+    <button className="control-button">⤢</button>
+  </div> */}
+</div>
+
 
         <div className="lesson-details">
           <h1>{lessonContent.title}</h1>
@@ -243,7 +250,7 @@ function Learning() {
       </div>
 
       {/* Right sidebar for additional resources */}
-      <div className="resources-sidebar">
+      {/* <div className="resources-sidebar">
         <div className="resources-container">
           <h3>Tài liệu bổ sung</h3>
           <ul className="resources-list">
@@ -285,7 +292,7 @@ function Learning() {
             )}
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

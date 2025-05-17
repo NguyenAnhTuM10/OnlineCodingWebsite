@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './RegisterModal.css';
 
-function RegisterModal({ onClose }) {
+function RegisterModal({ onClose, onSwitch }) {
   const [RegisterMethod, setRegisterMethod] = useState('email');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -99,7 +99,7 @@ function RegisterModal({ onClose }) {
           {/* Account registration and recovery links */}
           <div className="Register-footer">
             <p className="register-link">
-              Bạn đã có tài khoảnkhoản? <a href="/register">Đăng nhập</a>
+              Bạn đã có tài khoản? <span  style={{color: "blue", cursor: 'pointer'}} onClick={onSwitch}>Đăng nhập</span>
             </p>
             <p className="forgot-password">
               <a href="/forgot-password">Quên mật khẩu?</a>

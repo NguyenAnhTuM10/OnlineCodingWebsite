@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useEffect } from 'react';
 import './Learning.css'; // Import CSS styles for the learning page
 
 function Learning() {
@@ -58,6 +59,9 @@ function Learning() {
     }
   ];
 
+
+
+
   // Function to handle step completion
   const handleCompleteStep = (stepId) => {
     if (!completedSteps.includes(stepId)) {
@@ -111,6 +115,18 @@ function Learning() {
       }
     ]
   };
+
+
+    useEffect(() => {
+  // Reset scroll cho toàn bộ trang
+  window.scrollTo(0, 0);
+
+  // Reset scroll cho phần `.learning-content` (nếu vẫn cần)
+  const scrollableContent = document.querySelector('.learning-content');
+  if (scrollableContent) {
+    scrollableContent.scrollTop = 0;
+  }
+}, []);
 
   return (
     <div className="learning-page">
@@ -170,22 +186,7 @@ function Learning() {
             ></iframe>
           </div>
 
-  {/* <div className="video-controls">
-    <button className="control-button">◀◀</button>
-    <button className="control-button">◀</button>
-    <button className="control-button play">▶</button>
-    <button className="control-button">▶</button>
-    <button className="control-button">▶▶</button>
-    <div className="video-progress">
-      <div className="progress-bar">
-        <div className="progress-fill" style={{ width: '30%' }}></div>
-      </div>
-      <span className="time-display">04:22 / 14:35</span>
-    </div>
-    <button className="control-button">🔊</button>
-    <button className="control-button">⚙️</button>
-    <button className="control-button">⤢</button>
-  </div> */}
+ 
 </div>
 
 
@@ -249,52 +250,11 @@ function Learning() {
         </div>
       </div>
 
-      {/* Right sidebar for additional resources */}
-      {/* <div className="resources-sidebar">
-        <div className="resources-container">
-          <h3>Tài liệu bổ sung</h3>
-          <ul className="resources-list">
-            <li className="resource-item">
-              <span className="resource-icon">📄</span>
-              <span className="resource-title">Slide bài giảng</span>
-            </li>
-            <li className="resource-item">
-              <span className="resource-icon">📝</span>
-              <span className="resource-title">Bài tập thực hành</span>
-            </li>
-            <li className="resource-item">
-              <span className="resource-icon">📚</span>
-              <span className="resource-title">Tài liệu tham khảo</span>
-            </li>
-            <li className="resource-item">
-              <span className="resource-icon">🔗</span>
-              <span className="resource-title">Liên kết hữu ích</span>
-            </li>
-          </ul>
-        </div>
-
-        <div className="next-lessons">
-          <h3>Bài học tiếp theo</h3>
-          <div className="next-lesson-preview">
-            {currentStep < lessons.length ? (
-              <>
-                <h4>{lessons[currentStep]?.title}</h4>
-                <p>Thời lượng: {lessons[currentStep]?.duration}</p>
-                <button 
-                  className="preview-button"
-                  onClick={() => setCurrentStep(currentStep + 1)}
-                >
-                  Xem ngay
-                </button>
-              </>
-            ) : (
-              <p>Bạn đã hoàn thành tất cả các bài học!</p>
-            )}
-          </div>
-        </div>
-      </div> */}
+     
     </div>
   );
+
+
 }
 
 export default Learning;

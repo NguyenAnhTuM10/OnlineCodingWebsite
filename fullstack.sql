@@ -200,6 +200,16 @@ INSERT INTO users (username, email, password_hash, full_name, avatar_url, bio, r
 ('student1', 'student1@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Student One', '/images/avatars/student1.jpg', 'Learning web development', 'student'),
 ('student2', 'student2@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Student Two', '/images/avatars/student2.jpg', 'Aspiring full-stack developer', 'student'),
 ('student3', 'student3@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Student Three', '/images/avatars/student3.jpg', 'Software engineering student', 'student');
+INSERT INTO users (username, email, password_hash, full_name, avatar_url, bio, role)
+VALUES (
+  'user01',
+  'test01@example.com',
+  '$2b$10$ztXtM2zXGt1lSli/mXNKjOywVGpjD2efKMs4IacD4N6DeRFykVG4C',
+  'Test User',
+  '/images/avatars/testuser.jpg',
+  'Test login user',
+  'student'
+);
 
 -- Sample categories
 INSERT INTO categories (name, slug, description, image_url) VALUES

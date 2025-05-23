@@ -7,6 +7,12 @@ const enrollmentRoutes = require('./routes/enrollmentsRoute');
 const reviewRoutes = require('./routes/reviewRoute');
 const lessonProgressRoutes = require('./routes/lessonProgressRoutes');
 const userRoutes = require('./routes/userRoute');
+const blogRoutes = require('./routes/blogRoute');
+
+
+const cors = require('cors');
+
+
 
 
 
@@ -19,11 +25,12 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
+app.use(cors());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/protected', protectedRoutes);
 app.use('/api/enrollments', enrollmentRoutes);
-
+app.use('/api/blogs', blogRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/lesson-progress', lessonProgressRoutes);
 app.use('/api/users', userRoutes);

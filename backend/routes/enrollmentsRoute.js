@@ -1,0 +1,12 @@
+const express = require('express');
+const router = express.Router();
+const authenticate = require('../middlewares/authMiddleware');
+const { enrollCourse,getMyEnrollments } = require('../controllers/enrollmentsController');
+
+
+// dùng để đăng ký khóa học
+// Bảo vệ bằng JWT
+router.post('/', authenticate, enrollCourse);
+router.get('/my', authenticate, getMyEnrollments); // 👈 route mới
+
+module.exports = router;

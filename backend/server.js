@@ -4,6 +4,13 @@ const courseRoutes = require('./routes/courseRoute');
 const authRoutes = require('./routes/authRoute');
 const protectedRoutes = require('./routes/protectedRoute');
 const enrollmentRoutes = require('./routes/enrollmentsRoute');
+const reviewRoutes = require('./routes/reviewRoute');
+const lessonProgressRoutes = require('./routes/lessonProgressRoutes');
+const userRoutes = require('./routes/userRoute');
+
+
+
+
 
 
 
@@ -16,8 +23,11 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/protected', protectedRoutes);
 app.use('/api/enrollments', enrollmentRoutes);
-app.use('/api', courseRoutes);
 
+app.use('/api/reviews', reviewRoutes);
+app.use('/api/lesson-progress', lessonProgressRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api', courseRoutes);
 
 app.listen(PORT, () => {
   console.log(`🚀 Server đang chạy ở http://localhost:${PORT}`);

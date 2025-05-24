@@ -2,11 +2,21 @@ import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import './Header.css';
 
-function Header({openLoginModal,openRegisterModal}) {
+function Header({ openLoginModal, openRegisterModal, isLoggedIn, user, onLogout }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const toggleProfileMenu = () => {
+    setIsProfileMenuOpen(!isProfileMenuOpen);
+  };
+
+  const handleLogout = () => {
+    onLogout();
+    setIsProfileMenuOpen(false);
   };
 
   return (
@@ -46,11 +56,6 @@ function Header({openLoginModal,openRegisterModal}) {
                 Lộ trình
               </NavLink>
             </li>
-            {/* <li className="nav-item">
-              <NavLink to="/khoa-hoc" className={({isActive}) => isActive ? 'active' : ''}>
-                Học
-              </NavLink>
-            </li> */}
             <li className="nav-item">
               <NavLink to="/blog" className={({isActive}) => isActive ? 'active' : ''}>
                 Blog
@@ -59,10 +64,63 @@ function Header({openLoginModal,openRegisterModal}) {
           </ul>
         </nav>
 
-        <div className="auth-buttons">
-          <button onClick={openLoginModal} className="login-btn ">Đăng nhập</button>
-          <button onClick={openRegisterModal} className="register-btn">Đăng ký</button>
-        </div>
+        {/* Conditional rendering based on login status */}
+        {isLoggedIn ? (
+          <div className="profile-section">
+            <div className="profile-dropdown">
+              <button 
+                className="profile-button" 
+                onClick={toggleProfileMenu}
+              >
+                <div className="profile-avatar">
+                  {user?.avatar ? (
+                    <img 
+                      src={user.avatar} 
+                      alt="User Avatar" 
+                      className="avatar-image"
+                    />
+                  ) : (
+                    <div className="default-avatar">
+                      {user?.name?.charAt(0).toUpperCase() || 'U'}
+                    </div>
+                  )}
+                </div>
+                <span className="profile-name">{user?.name || 'User'}</span>
+                <i className={`dropdown-arrow ${isProfileMenuOpen ? 'open' : ''}`}>▼</i>
+              </button>
+              
+              {isProfileMenuOpen && (
+                <div className="profile-dropdown-menu">
+                  <Link to="/profile" className="dropdown-item" onClick={() => setIsProfileMenuOpen(false)}>
+                    <i className="icon">👤</i>
+                    Thông tin cá nhân
+                  </Link>
+                  <Link to="/my-courses" className="dropdown-item" onClick={() => setIsProfileMenuOpen(false)}>
+                    <i className="icon">📚</i>
+                    Khóa học của tôi
+                  </Link>
+                  <Link to="/settings" className="dropdown-item" onClick={() => setIsProfileMenuOpen(false)}>
+                    <i className="icon">⚙️</i>
+                    Cài đặt
+                  </Link>
+                  <hr className="dropdown-divider" />
+                  <button 
+                    className="dropdown-item logout-item" 
+                    onClick={handleLogout}
+                  >
+                    <i className="icon">🚪</i>
+                    Đăng xuất
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="auth-buttons">
+            <button onClick={openLoginModal} className="login-btn">Đăng nhập</button>
+            <button onClick={openRegisterModal} className="register-btn">Đăng ký</button>
+          </div>
+        )}
 
         <button className="menu-toggle" onClick={toggleMenu}>
           <span className={`hamburger ${isMenuOpen ? 'active' : ''}`}></span>

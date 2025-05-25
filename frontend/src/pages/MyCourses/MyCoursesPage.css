@@ -1,0 +1,36 @@
+.my-courses {
+  max-width: 960px;
+  margin: 40px auto;
+  padding: 0 16px;
+}
+
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.course-item {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s;
+}
+
+.course-item:hover {
+  transform: translateY(-4px);
+}
+
+.course-item img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+
+.course-info {
+  padding: 12px;
+}

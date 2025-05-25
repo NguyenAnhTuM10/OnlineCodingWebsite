@@ -477,3 +477,43 @@
     font-size: 16px;
   }
 }
+
+
+
+
+
+.error-message {
+  background-color: #fee;
+  color: #c33;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  border: 1px solid #fcc;
+  font-size: 14px;
+}
+
+.login-submit-btn:disabled,
+.login-method-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.demo-login {
+  background-color: #28a745 !important;
+  color: white !important;
+}

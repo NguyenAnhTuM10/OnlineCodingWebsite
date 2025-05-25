@@ -10,6 +10,8 @@ const userRoutes = require('./routes/userRoute');
 const blogRoutes = require('./routes/blogRoute');
 
 
+
+
 const cors = require('cors');
 
 
@@ -34,6 +36,7 @@ app.use('/api/blogs', blogRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/lesson-progress', lessonProgressRoutes);
 app.use('/api/users', userRoutes);
+
 app.use('/api', courseRoutes);
 
 app.listen(PORT, () => {

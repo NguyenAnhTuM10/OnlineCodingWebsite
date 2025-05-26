@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 const CourseDetailPage = () => {
+   const { id } = useParams();
   const [courseData, setCourseData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/courses/2/all-lessons')
+  
+    fetch(`http://localhost:3000/api/courses/${id}/all-lessons`)
       .then((res) => res.json())
       .then((data) => {
         console.log('Dữ liệu khóa học:', data);

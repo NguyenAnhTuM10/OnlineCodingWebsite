@@ -9,8 +9,8 @@ import Blog from './pages/Blog/Blog';
 import Learning from './pages/Learning/Learning';
 import AuthModal from './components/Auth/AuthModal';
 import ProfilePage from './pages/Profile/ProfilePage';
-import MyCoursesPage from './pages/MyCourses/MyCoursesPage';
-
+import MyCoursesPage from './pages/MyCourses/MyCoursesPage';// Assuming this is the correct import path
+import CourseDetailPage from './pages/CourseDetailPage/CourseDetailPage';
 import './App.css';
 
 function App() {
@@ -111,9 +111,13 @@ const openRegisterModal = () => {
             <Route path="/lo-trinh" element={<RoadMap />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/learning" element={<Learning />} />
-            {/* Add these routes for profile functionality */}
+           
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/my-courses" element={<MyCoursesPage />} />
+            <Route path="/courses/:id/all-lessons" element={<CourseDetailPage />} />
+
+            
+
             <Route path="/settings" element={<div>Settings Page - Coming Soon</div>} />
           </Routes>
         </main>

@@ -12,34 +12,42 @@ const getAllCourses = (req, res) => {
   });
 };
 
-const getCourseBySlug = (req, res) => {
-  const slug = req.params.slug;
+// const getCourseBySlug = (req, res) => {
 
-  const sql = `
-    SELECT 
-      c.*, 
-      cat.name AS category_name, 
-      u.full_name AS instructor_name 
-    FROM courses c
-    LEFT JOIN categories cat ON c.category_id = cat.category_id
-    LEFT JOIN users u ON c.instructor_id = u.user_id
-    WHERE c.slug = ?
-    LIMIT 1
-  `;
+//   const slug = req.params.slug;
 
-  db.query(sql, [slug], (err, results) => {
-    if (err) {
-      console.error('❌ Lỗi truy vấn chi tiết khóa học:', err);
-      return res.status(500).json({ error: 'Lỗi server' });
-    }
+//   const sql = `
+//     SELECT 
+//       c.*, 
+//       cat.name AS category_name, 
+//       u.full_name AS instructor_name 
+//     FROM courses c
+//     LEFT JOIN categories cat ON c.category_id = cat.category_id
+//     LEFT JOIN users u ON c.instructor_id = u.user_id
+//     WHERE c.slug = ?
+//     LIMIT 1
+//   `;
 
-    if (results.length === 0) {
-      return res.status(404).json({ error: 'Không tìm thấy khóa học' });
-    }
+//   db.query(sql, [slug], (err, results) => {
+//     if (err) {
+//       console.error('❌ Lỗi truy vấn chi tiết khóa học:', err);
+//       return res.status(500).json({ error: 'Lỗi server' });
+//     }
 
-    res.json(results[0]);
-  });
-};
+//     if (results.length === 0) {
+//       return res.status(404).json({ error: 'Không tìm thấy khóa học' });
+//     }
+
+//     res.json(results[0]);
+//   });
+// };
+
+
+
+
+
+
+
 
 const getChaptersByCourseId = (req, res) => {
   const courseId = req.params.id;
@@ -184,11 +192,29 @@ const getAllLessonsByCourseId = (req, res) => {
   });
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 module.exports = {
   getAllCourses,
-  getCourseBySlug,
+  
   getChaptersByCourseId,
   getLessonsByChapterId,
   getLessonById,
-  getAllLessonsByCourseId, // thêm export
+  getAllLessonsByCourseId,
+  
 };
+

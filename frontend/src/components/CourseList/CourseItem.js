@@ -6,7 +6,7 @@ function CourseItem({ course }) {
   return (
     <div className="course-item">
       {/* <Link to={`/learning/${course.id}`} className="course-link"> */}
-      <Link to={`/learning`} className="course-link">
+      <Link to={`/courses/${course.id}/all-lessons`} className="course-link">
         <div className="course-thumbnail">
           <img src={course.image} alt={course.title} />
         </div>

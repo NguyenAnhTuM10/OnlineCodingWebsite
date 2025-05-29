@@ -1,74 +1,104 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
-const CourseDetailPage = () => {
-   const { id } = useParams();
-  const [courseData, setCourseData] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function CourseVideoPage() {
+  const { id } = useParams(); // Lấy courseId từ URL
+  const [chapters, setChapters] = useState([]);
+  const [currentLesson, setCurrentLesson] = useState(null);
+  const [loadingLesson, setLoadingLesson] = useState(false);
 
+  // Fetch tất cả bài học khi component mount
   useEffect(() => {
-  
+   
     fetch(`http://localhost:3000/api/courses/${id}/all-lessons`)
       .then((res) => res.json())
       .then((data) => {
-        console.log('Dữ liệu khóa học:', data);
-        setCourseData(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error('Lỗi khi lấy dữ liệu khóa học:', err);
-        setLoading(false);
+        setChapters(data);
+        // Tự động load bài đầu tiên
+        const firstLessonId = data?.[0]?.lessons?.[0]?.lesson_id;
+        if (firstLessonId) {
+          loadLesson(firstLessonId);
+        }
       });
   }, []);
 
-  if (loading) return <p>Đang tải dữ liệu khóa học...</p>;
+  const loadLesson = (lessonId) => {
+    setLoadingLesson(true);
+    fetch(`http://localhost:3000/api/lessons/${lessonId}`)
+      .then((res) => res.json())
+      .then((lesson) => {
+        setCurrentLesson(lesson);
+        setLoadingLesson(false);
+      });
+  };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Chi tiết khóa học</h1>
-      {courseData
-        .sort((a, b) => a.position - b.position)
-        .map((chapter) => (
-          <div key={chapter.chapter_id} className="mb-8">
-            <h2 className="text-2xl font-semibold text-blue-600 mb-3">
-              Chương {chapter.position}: {chapter.title}
-            </h2>
-            <ul className="space-y-2">
-              {chapter.lessons
-                .sort((a, b) => a.position - b.position)
-                .map((lesson) => (
-                  <li
-                    key={lesson.lesson_id}
-                    className="p-4 border rounded-lg shadow-sm hover:shadow-md transition"
+    <div style={{ display: "flex", minHeight: "100vh" }}>
+      {/* Sidebar */}
+      <aside
+        style={{
+          width: "25%",
+          padding: "20px",
+          borderRight: "1px solid #ddd",
+          overflowY: "auto",
+        }}
+      >
+        <h2 style={{ fontSize: "20px", fontWeight: "bold", marginBottom: "16px" }}>
+          Danh sách bài học
+        </h2>
+        {chapters.map((chapter) => (
+          <div key={chapter.chapter_id} style={{ marginBottom: "16px" }}>
+            <h3 style={{ fontWeight: "600" }}>{chapter.title}</h3>
+            <ul style={{ paddingLeft: "10px", marginTop: "8px" }}>
+              {chapter.lessons.map((lesson) => (
+                <li key={lesson.lesson_id} style={{ marginBottom: "4px" }}>
+                  <button
+                    onClick={() => loadLesson(lesson.lesson_id)}
+                    style={{
+                      width: "100%",
+                      textAlign: "left",
+                      padding: "8px",
+                      border: "none",
+                      backgroundColor:
+                        currentLesson?.lesson_id === lesson.lesson_id ? "#d0ebff" : "#f9f9f9",
+                      fontWeight:
+                        currentLesson?.lesson_id === lesson.lesson_id ? "bold" : "normal",
+                      cursor: "pointer",
+                    }}
                   >
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="text-lg font-medium">
-                          Bài {lesson.position}: {lesson.title}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          Thời lượng: {Math.floor(lesson.duration / 60)} phút {lesson.duration % 60} giây
-                        </p>
-                        <p className={`text-sm ${lesson.is_free ? 'text-green-600' : 'text-red-600'}`}>
-                          {lesson.is_free ? 'Miễn phí' : 'Yêu cầu trả phí'}
-                        </p>
-                      </div>
-                      <a
-                        href={lesson.video_url}
-                        className="text-blue-500 underline"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Xem video
-                      </a>
-                    </div>
-                  </li>
-                ))}
+                    {lesson.title} {lesson.is_free ? "(Free)" : ""}
+                  </button>
+                </li>
+              ))}
             </ul>
           </div>
         ))}
+      </aside>
+
+      {/* Main content */}
+      <main style={{ flex: 1, padding: "20px" }}>
+        {loadingLesson || !currentLesson ? (
+          <div>Đang tải bài học...</div>
+        ) : (
+          <div>
+            <h1 style={{ fontSize: "24px", fontWeight: "bold", marginBottom: "16px" }}>
+              {currentLesson.title}
+            </h1>
+            <video
+              src={currentLesson.video_url}
+              controls
+              style={{
+                width: "100%",
+                maxWidth: "100%",
+                marginBottom: "16px",
+                borderRadius: "4px",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+              }}
+            />
+            <p style={{ fontSize: "16px", color: "#444" }}>{currentLesson.content}</p>
+          </div>
+        )}
+      </main>
     </div>
   );
-};
-
-export default CourseDetailPage;
+}

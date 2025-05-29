@@ -110,7 +110,7 @@ const openRegisterModal = () => {
             <Route path="/OnlineCodingWebsite" element={<Home />} />
             <Route path="/lo-trinh" element={<RoadMap />} />
             <Route path="/blog" element={<Blog />} />
-            <Route path="/learning" element={<Learning />} />
+            <Route path="/learning/:id" element={<Learning />} />
            
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/my-courses" element={<MyCoursesPage />} />

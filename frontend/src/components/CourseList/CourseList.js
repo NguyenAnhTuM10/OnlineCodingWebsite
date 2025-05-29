@@ -13,7 +13,7 @@ function CourseList() {
     fetch('http://localhost:3000/api/courses')
       .then(res => res.json())
       .then(data => {
-         console.log('✅ Dữ liệu lấy được:', data); // 🧠 log ra đây
+        //  console.log('✅ Dữ liệu lấy được:', data); // 🧠 log ra đây
         setCourses(data);
         setLoading(false);
       })

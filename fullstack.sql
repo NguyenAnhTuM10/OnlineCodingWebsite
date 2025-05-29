@@ -189,6 +189,41 @@ CREATE INDEX idx_lesson_progress_user ON lesson_progress(user_id);
 CREATE INDEX idx_lesson_progress_lesson ON lesson_progress(lesson_id);
 CREATE INDEX idx_blog_posts_author ON blog_posts(author_id);
 
+
+
+
+
+CREATE TABLE lesson_comments (
+    comment_id INT AUTO_INCREMENT PRIMARY KEY,
+    lesson_id INT NOT NULL,
+    user_id INT NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (lesson_id) REFERENCES lessons(lesson_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+-- Lesson comment replies table (for nested comments)
+CREATE TABLE lesson_comment_replies (
+    reply_id INT AUTO_INCREMENT PRIMARY KEY,
+    comment_id INT NOT NULL,
+    user_id INT NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (comment_id) REFERENCES lesson_comments(comment_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+
+
+
+
+
+
+
+
+
+
 -- Insert sample data
 
 -- Sample users

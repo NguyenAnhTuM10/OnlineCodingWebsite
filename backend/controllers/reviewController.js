@@ -1,47 +1,60 @@
 const db = require('../db');
 
+// Gửi đánh giá khóa học
 const submitReview = (req, res) => {
   const userId = req.user.user_id;
   const { course_id, rating, comment } = req.body;
 
   if (!course_id || !rating) {
-    return res.status(400).json({ error: 'Thiếu course_id hoặc rating' });
+    return res.status(400).json({ success: false, message: 'Thiếu course_id hoặc rating' });
   }
 
   if (rating < 1 || rating > 5) {
-    return res.status(400).json({ error: 'Rating phải từ 1 đến 5' });
+    return res.status(400).json({ success: false, message: 'Rating phải từ 1 đến 5' });
   }
 
-  // Check xem user đã học chưa
+  // Kiểm tra đã học khóa học chưa
   const checkEnrollSql = 'SELECT * FROM enrollments WHERE user_id = ? AND course_id = ?';
   db.query(checkEnrollSql, [userId, course_id], (err, results) => {
-    if (err) return res.status(500).json({ error: 'Lỗi kiểm tra enrollments' });
-
-    if (results.length === 0) {
-      return res.status(403).json({ error: 'Bạn chưa học khóa này nên không thể đánh giá' });
+    if (err) {
+      console.error('❌ Lỗi kiểm tra enrollments:', err);
+      return res.status(500).json({ success: false, message: 'Lỗi kiểm tra ghi danh' });
     }
 
-    // Check xem đã đánh giá chưa
+    if (results.length === 0) {
+      return res.status(403).json({ success: false, message: 'Bạn chưa học khóa học này nên không thể đánh giá' });
+    }
+
+    // Kiểm tra đã đánh giá chưa
     const checkReviewSql = 'SELECT * FROM reviews WHERE user_id = ? AND course_id = ?';
     db.query(checkReviewSql, [userId, course_id], (err2, reviewResults) => {
-      if (err2) return res.status(500).json({ error: 'Lỗi kiểm tra reviews' });
-
-      if (reviewResults.length > 0) {
-        return res.status(400).json({ error: 'Bạn đã đánh giá khóa học này rồi' });
+      if (err2) {
+        console.error('❌ Lỗi kiểm tra reviews:', err2);
+        return res.status(500).json({ success: false, message: 'Lỗi kiểm tra đánh giá' });
       }
 
-      // Ghi đánh giá mới
-      const insertSql = 'INSERT INTO reviews (course_id, user_id, rating, comment) VALUES (?, ?, ?, ?)';
-      db.query(insertSql, [course_id, userId, rating, comment || null], (err3) => {
-        if (err3) return res.status(500).json({ error: 'Lỗi khi gửi đánh giá' });
+      if (reviewResults.length > 0) {
+        return res.status(400).json({ success: false, message: 'Bạn đã đánh giá khóa học này rồi' });
+      }
 
-        return res.json({ message: 'Đánh giá thành công' });
+      // Ghi nhận đánh giá mới
+      const insertSql = `
+        INSERT INTO reviews (course_id, user_id, rating, comment)
+        VALUES (?, ?, ?, ?)
+      `;
+      db.query(insertSql, [course_id, userId, rating, comment || null], (err3) => {
+        if (err3) {
+          console.error('❌ Lỗi ghi đánh giá:', err3);
+          return res.status(500).json({ success: false, message: 'Lỗi khi gửi đánh giá' });
+        }
+
+        return res.json({ success: true, message: 'Đánh giá thành công' });
       });
     });
   });
 };
 
-
+// Lấy tất cả đánh giá của 1 khóa học
 const getReviewsByCourseId = (req, res) => {
   const courseId = req.params.id;
 
@@ -61,13 +74,18 @@ const getReviewsByCourseId = (req, res) => {
 
   db.query(sql, [courseId], (err, results) => {
     if (err) {
-      console.error('❌ Lỗi lấy reviews:', err);
-      return res.status(500).json({ error: 'Lỗi server' });
+      console.error('❌ Lỗi khi lấy danh sách đánh giá:', err);
+      return res.status(500).json({ success: false, message: 'Lỗi server khi lấy đánh giá' });
     }
 
-    res.json(results);
+    return res.json({
+      success: true,
+      data: results
+    });
   });
 };
 
-
-module.exports = { submitReview ,getReviewsByCourseId};
+module.exports = {
+  submitReview,
+  getReviewsByCourseId
+};

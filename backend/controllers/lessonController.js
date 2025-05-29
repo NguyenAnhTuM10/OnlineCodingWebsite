@@ -1,28 +1,36 @@
-// controllers/lessonController.js
+const db = require('../db');
+
 exports.getLessonContent = async (req, res) => {
   try {
     const { lessonId } = req.params;
-    
+
     const query = `
       SELECT 
-        l.lesson_id, l.title, l.content, l.video_url, l.duration, l.is_free,
-        c.chapter_id, c.title as chapter_title
+        l.lesson_id,
+        l.title,
+        l.content,
+        l.video_url,
+        l.duration,
+        l.is_free,
+        c.chapter_id,
+        c.title AS chapter_title
       FROM lessons l
       JOIN chapters c ON l.chapter_id = c.chapter_id
       WHERE l.lesson_id = ?
+      LIMIT 1
     `;
-    
+
     const [rows] = await db.execute(query, [lessonId]);
-    
+
     if (rows.length === 0) {
       return res.status(404).json({
         success: false,
-        message: 'Lesson not found'
+        message: 'Không tìm thấy bài học'
       });
     }
-    
+
     const lesson = rows[0];
-    
+
     res.json({
       success: true,
       data: {
@@ -38,15 +46,12 @@ exports.getLessonContent = async (req, res) => {
         }
       }
     });
-    
+
   } catch (error) {
-    console.error('Error fetching lesson content:', error);
+    console.error('❌ Lỗi khi lấy nội dung bài học:', error);
     res.status(500).json({
       success: false,
-      message: 'Internal server error'
+      message: 'Lỗi server nội bộ'
     });
   }
 };
-
-
-

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getCurrentUser,updateCurrentUser,getUserProgress,updateLessonProgress } = require('../controllers/userController');
+const { getCurrentUser,updateCurrentUser,getUserProgress,updateLessonProgress,changePassword } = require('../controllers/userController');
 // const progressController = require('../controllers/progressController');
 const authenticate = require('../middlewares/authMiddleware');
 
@@ -12,6 +12,9 @@ router.get('/:userId/progress/:courseId',getUserProgress);
 
 // POST /api/users/:userId/progress
 router.post('/:userId/progress',updateLessonProgress );
+
+// Route đổi mật khẩu
+router.put('/change-password', authenticate, changePassword);
 
 
 

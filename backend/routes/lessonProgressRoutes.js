@@ -1,26 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const authenticate = require('../middlewares/authMiddleware');
-const { 
-  updateLessonProgress,
-  getLessonProgress,
-  getLessonContent,
-  getLessonComments,
-  addLessonComment ,
-  getUserProgress
-} = require('../controllers/lessonProgressController');
-
-router.get('/:lesson_id/content', authenticate, getLessonContent);
-router.get('/:lesson_id/progress', authenticate, getLessonProgress);
-router.put('/:lesson_id/progress', authenticate, updateLessonProgress);
-router.get('/:lesson_id/comments', authenticate, getLessonComments);
-router.post('/:lesson_id/comments', authenticate, addLessonComment);
-
-router.post('/', authenticate, updateLessonProgress);
+const lessonProgressController = require('../controllers/lessonProgressController');
 
 
 
 
+router.post('/update', lessonProgressController.updateLessonProgress);  // Route update tiến độ
 
+// Lấy tiến độ của 1 user
+router.get('/:userId', lessonProgressController.getLessonProgress);
+
+// Cập nhật hoặc tạo mới tiến độ
+router.post('/', lessonProgressController.updateLessonProgress);
 
 module.exports = router;

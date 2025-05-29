@@ -85,7 +85,7 @@ export default function CourseVideoPage() {
               {currentLesson.title}
             </h1>
             <video
-              src={currentLesson.video_url}
+              src={`http://localhost:3000/public/${currentLesson.video_url}`}
               controls
               style={{
                 width: "100%",

@@ -5,6 +5,7 @@
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
-    "lucide-react": "^0.511.0"
+    "lucide-react": "^0.511.0",
+    "mysql2": "^3.14.1"
   }
 }

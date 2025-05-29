@@ -6,7 +6,7 @@ import Footer from './components/Footer/Footer';
 import Home from './pages/Home/Home';
 import RoadMap from './pages/RoadMap/RoadMap';
 import Blog from './pages/Blog/Blog';
-import Learning from './pages/Learning/Learning';
+
 import AuthModal from './components/Auth/AuthModal';
 import ProfilePage from './pages/Profile/ProfilePage';
 import MyCoursesPage from './pages/MyCourses/MyCoursesPage';// Assuming this is the correct import path
@@ -110,7 +110,7 @@ const openRegisterModal = () => {
             <Route path="/OnlineCodingWebsite" element={<Home />} />
             <Route path="/lo-trinh" element={<RoadMap />} />
             <Route path="/blog" element={<Blog />} />
-            <Route path="/learning/:id" element={<Learning />} />
+         
            
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/my-courses" element={<MyCoursesPage />} />

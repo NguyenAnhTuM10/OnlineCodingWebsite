@@ -486,123 +486,155 @@ const getAllCourses = async (req, res) => {
   }
 };
 
-// Hàm tìm kiếm vẫn giữ nguyên vì đã đúng
+
+
+
 const searchCourses = async (req, res) => {
   const q = req.query.q || '';
-  if (!q) return res.json([]); // trả mảng rỗng nếu query rỗng
+  if (!q.trim()) return res.json([]);
 
   try {
-    // Chuẩn hóa từ khóa tìm kiếm
     const normalizedQuery = q.trim().toLowerCase();
-    
-    // Tách từ khóa thành các từ riêng lẻ để tìm kiếm linh hoạt hơn
-    const keywords = normalizedQuery.split(/\s+/).filter(word => word.length > 0);
-    
-    let query = '';
-    let params = [];
+    const searchPattern = `%${normalizedQuery}%`;
 
-    if (keywords.length === 0) {
-      return res.json([]);
-    }
+    const query = `
+      SELECT * FROM courses
+      WHERE LOWER(title) LIKE ?
+      LIMIT 10
+    `;
+    const params = [searchPattern];
 
-    // Xây dựng query tìm kiếm với nhiều điều kiện
-    if (keywords.length === 1) {
-      // Tìm kiếm đơn giản với 1 từ khóa
-      query = `
-        SELECT *, 
-               CASE 
-                 WHEN LOWER(title) LIKE ? THEN 1
-                 WHEN LOWER(description) LIKE ? THEN 2
-                 WHEN LOWER(instructor) LIKE ? THEN 3
-                 ELSE 4
-               END as relevance_score
-        FROM courses 
-        WHERE LOWER(title) LIKE ? 
-           OR LOWER(description) LIKE ? 
-           OR LOWER(instructor) LIKE ?
-           OR LOWER(category) LIKE ?
-        ORDER BY relevance_score, title
-        LIMIT 20
-      `;
-      const searchPattern = `%${normalizedQuery}%`;
-      params = [searchPattern, searchPattern, searchPattern, searchPattern, searchPattern, searchPattern, searchPattern];
-    } else {
-      // Tìm kiếm với nhiều từ khóa
-      const titleConditions = keywords.map(() => 'LOWER(title) LIKE ?').join(' AND ');
-      const descConditions = keywords.map(() => 'LOWER(description) LIKE ?').join(' AND ');
-      const instructorConditions = keywords.map(() => 'LOWER(instructor) LIKE ?').join(' AND ');
-      
-      // Tạo điều kiện OR cho từng từ khóa
-      const flexibleConditions = keywords.map(() => 
-        '(LOWER(title) LIKE ? OR LOWER(description) LIKE ? OR LOWER(instructor) LIKE ? OR LOWER(category) LIKE ?)'
-      ).join(' AND ');
-
-      query = `
-        SELECT *, 
-               CASE 
-                 WHEN (${titleConditions}) THEN 1
-                 WHEN (${descConditions}) THEN 2
-                 WHEN (${instructorConditions}) THEN 3
-                 ELSE 4
-               END as relevance_score
-        FROM courses 
-        WHERE ${flexibleConditions}
-        ORDER BY relevance_score, title
-        LIMIT 20
-      `;
-
-      // Tạo params cho tất cả các điều kiện
-      params = [];
-      
-      // Params cho relevance_score (title conditions)
-      keywords.forEach(keyword => {
-        params.push(`%${keyword}%`);
-      });
-      
-      // Params cho relevance_score (description conditions)
-      keywords.forEach(keyword => {
-        params.push(`%${keyword}%`);
-      });
-      
-      // Params cho relevance_score (instructor conditions)
-      keywords.forEach(keyword => {
-        params.push(`%${keyword}%`);
-      });
-      
-      // Params cho WHERE clause (flexible conditions)
-      keywords.forEach(keyword => {
-        const pattern = `%${keyword}%`;
-        params.push(pattern, pattern, pattern, pattern); // title, description, instructor, category
-      });
-    }
+    console.log('▶️ SQL:', query);
+    console.log('📦 Params:', params);
 
     const [results] = await db.execute(query, params);
-    
-    // Thêm highlight cho kết quả (tùy chọn)
-    const highlightedResults = results.map(course => {
-      const highlightText = (text, query) => {
-        if (!text || !query) return text;
-        const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-        return text.replace(regex, '<mark>$1</mark>');
-      };
 
-      return {
-        ...course,
-        highlighted_title: highlightText(course.title, normalizedQuery),
-        highlighted_description: course.description ? highlightText(course.description, normalizedQuery) : null,
-        search_score: course.relevance_score
-      };
-    });
-
-    res.json(highlightedResults);
-    console.log('✅ Kết quả tìm kiếm nâng cao:', results.length, 'khóa học');
-    console.log('🔍 Từ khóa:', keywords.join(', '));
-    
+    res.json(results);
+    console.log('✅ Kết quả:', results.length, 'khóa học');
   } catch (error) {
-    console.error('❌ Lỗi tìm kiếm khóa học:', error);
+    console.error('❌ Lỗi tìm kiếm:', error);
     res.status(500).json({ error: 'Lỗi server' });
   }
 };
+
+
+// Hàm tìm kiếm vẫn giữ nguyên vì đã đúng
+// const searchCourses = async (req, res) => {
+//   const q = req.query.q || '';
+//   if (!q) return res.json([]); // trả mảng rỗng nếu query rỗng
+
+//   try {
+//     // Chuẩn hóa từ khóa tìm kiếm
+//     const normalizedQuery = q.trim().toLowerCase();
+    
+//     // Tách từ khóa thành các từ riêng lẻ để tìm kiếm linh hoạt hơn
+//     const keywords = normalizedQuery.split(/\s+/).filter(word => word.length > 0);
+    
+//     let query = '';
+//     let params = [];
+
+//     if (keywords.length === 0) {
+//       return res.json([]);
+//     }
+
+//     // Xây dựng query tìm kiếm với nhiều điều kiện
+//     if (keywords.length === 1) {
+//       // Tìm kiếm đơn giản với 1 từ khóa
+//       query = `
+//         SELECT *, 
+//                CASE 
+//                  WHEN LOWER(title) LIKE ? THEN 1
+//                  WHEN LOWER(description) LIKE ? THEN 2
+//                  WHEN LOWER(instructor) LIKE ? THEN 3
+//                  ELSE 4
+//                END as relevance_score
+//         FROM courses 
+//         WHERE LOWER(title) LIKE ? 
+//            OR LOWER(description) LIKE ? 
+//            OR LOWER(instructor) LIKE ?
+//            OR LOWER(category) LIKE ?
+//         ORDER BY relevance_score, title
+//         LIMIT 20
+//       `;
+//       const searchPattern = `%${normalizedQuery}%`;
+//       params = [searchPattern, searchPattern, searchPattern, searchPattern, searchPattern, searchPattern, searchPattern];
+//     } else {
+//       // Tìm kiếm với nhiều từ khóa
+//       const titleConditions = keywords.map(() => 'LOWER(title) LIKE ?').join(' AND ');
+//       const descConditions = keywords.map(() => 'LOWER(description) LIKE ?').join(' AND ');
+//       const instructorConditions = keywords.map(() => 'LOWER(instructor) LIKE ?').join(' AND ');
+      
+//       // Tạo điều kiện OR cho từng từ khóa
+//       const flexibleConditions = keywords.map(() => 
+//         '(LOWER(title) LIKE ? OR LOWER(description) LIKE ? OR LOWER(instructor) LIKE ? OR LOWER(category) LIKE ?)'
+//       ).join(' AND ');
+
+//       query = `
+//         SELECT *, 
+//                CASE 
+//                  WHEN (${titleConditions}) THEN 1
+//                  WHEN (${descConditions}) THEN 2
+//                  WHEN (${instructorConditions}) THEN 3
+//                  ELSE 4
+//                END as relevance_score
+//         FROM courses 
+//         WHERE ${flexibleConditions}
+//         ORDER BY relevance_score, title
+//         LIMIT 20
+//       `;
+
+//       // Tạo params cho tất cả các điều kiện
+//       params = [];
+      
+//       // Params cho relevance_score (title conditions)
+//       keywords.forEach(keyword => {
+//         params.push(`%${keyword}%`);
+//       });
+      
+//       // Params cho relevance_score (description conditions)
+//       keywords.forEach(keyword => {
+//         params.push(`%${keyword}%`);
+//       });
+      
+//       // Params cho relevance_score (instructor conditions)
+//       keywords.forEach(keyword => {
+//         params.push(`%${keyword}%`);
+//       });
+      
+//       // Params cho WHERE clause (flexible conditions)
+//       keywords.forEach(keyword => {
+//         const pattern = `%${keyword}%`;
+//         params.push(pattern, pattern, pattern, pattern); // title, description, instructor, category
+//       });
+//     }
+
+//     const [results] = await db.execute(query, params);
+    
+//     // Thêm highlight cho kết quả (tùy chọn)
+//     const highlightedResults = results.map(course => {
+//       const highlightText = (text, query) => {
+//         if (!text || !query) return text;
+//         const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+//         return text.replace(regex, '<mark>$1</mark>');
+//       };
+
+//       return {
+//         ...course,
+//         highlighted_title: highlightText(course.title, normalizedQuery),
+//         highlighted_description: course.description ? highlightText(course.description, normalizedQuery) : null,
+//         search_score: course.relevance_score
+//       };
+//     });
+
+//     res.json(highlightedResults);
+//     console.log('✅ Kết quả tìm kiếm nâng cao:', results.length, 'khóa học');
+//     console.log('🔍 Từ khóa:', keywords.join(', '));
+    
+//   } catch (error) {
+//     console.error('❌ Lỗi tìm kiếm khóa học:', error);
+//     res.status(500).json({ error: 'Lỗi server' });
+//   }
+// };
 
 
 

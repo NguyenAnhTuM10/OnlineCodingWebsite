@@ -52,15 +52,223 @@
   border-color: #f05123;
 }
 
-/* Responsive */
-@media (max-width: 1023px) {
-  .courses-grid {
-    grid-template-columns: repeat(2, 1fr);
+
+
+/* Thêm vào file CourseList.css */
+
+/* Pagination Styles - Màu trắng và cam nhạt */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 40px 0;
+  padding: 20px;
+  flex-wrap: wrap;
+}
+
+.pagination-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border: 2px solid #fde8d9;
+  background: white;
+  color: #f05123;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 80px;
+  justify-content: center;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  border-color: #f05123;
+  background: #fef7f4;
+  color: #d44420;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(240, 81, 35, 0.2);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  color: #d1d5db;
+  border-color: #f3f4f6;
+  background: #fafafa;
+}
+
+.pagination-btn:disabled:hover {
+  transform: none;
+  box-shadow: none;
+  background: #fafafa;
+}
+
+.page-numbers {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.page-number {
+  width: 42px;
+  height: 42px;
+  border: 2px solid #fde8d9;
+  background: white;
+  color: #f05123;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-number:hover {
+  border-color: #f05123;
+  background: #fef7f4;
+  color: #d44420;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 4px 8px rgba(240, 81, 35, 0.2);
+}
+
+.page-number.active {
+  background: #fef0eb;
+  border-color: #f05123;
+  color: #d44420;
+  box-shadow: 0 4px 12px rgba(240, 81, 35, 0.25);
+  transform: scale(1.1);
+}
+
+.page-number.active:hover {
+  background: #fed7c7;
+  border-color: #d44420;
+  color: #b8381f;
+  transform: translateY(-2px) scale(1.12);
+  box-shadow: 0 6px 16px rgba(240, 81, 35, 0.3);
+}
+
+.ellipsis {
+  padding: 0 10px;
+  color: #f05123;
+  font-weight: bold;
+  font-size: 16px;
+  user-select: none;
+  opacity: 0.6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .pagination {
+    gap: 4px;
+    margin: 30px 0;
+    padding: 15px;
+  }
+  
+  .pagination-btn {
+    padding: 10px 14px;
+    font-size: 13px;
+    min-width: 70px;
+  }
+  
+  .page-number {
+    width: 38px;
+    height: 38px;
+    font-size: 13px;
+  }
+  
+  .page-numbers {
+    gap: 3px;
   }
 }
 
-@media (max-width: 767px) {
-  .courses-grid {
-    grid-template-columns: 1fr;
+@media (max-width: 480px) {
+  .pagination {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .page-numbers {
+    order: -1;
+  }
+  
+  .pagination-btn {
+    width: 100px;
   }
 }
+
+/* Loading state cho pagination */
+.pagination.loading {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.pagination.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #f05123;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+/* Smooth transitions */
+.pagination * {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hover effect cho toàn pagination */
+.pagination:hover .page-number:not(.active):not(:hover) {
+  opacity: 0.7;
+  transform: scale(0.98);
+}
+
+.pagination:hover .pagination-btn:not(:disabled):not(:hover) {
+  opacity: 0.8;
+  transform: scale(0.98);
+}
+
+/* Focus states cho accessibility */
+.pagination-btn:focus,
+.page-number:focus {
+  outline: 3px solid rgba(240, 81, 35, 0.3);
+  outline-offset: 2px;
+}
+
+/* Animation khi click */
+.page-number:active {
+  transform: scale(0.95);
+  transition: transform 0.1s ease;
+}
+
+.pagination-btn:active {
+  transform: scale(0.95);
+  transition: transform 0.1s ease;
+}
+
+/* Gradient subtle cho active state */
+.page-number.active {
+  background: linear-gradient(135deg, #fef0eb 0%, #fed7c7 100%);
+}
+
+.page-number.active:hover {
+  background: linear-gradient(135deg, #fed7c7 0%, #fcc5ae 100%);
+}
+
+
+

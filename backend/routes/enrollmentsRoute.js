@@ -6,7 +6,7 @@ const { enrollCourse,getMyEnrollments } = require('../controllers/enrollmentsCon
 
 // dùng để đăng ký khóa học
 // Bảo vệ bằng JWT
-router.post('/', authenticate, enrollCourse);
+router.post('/', authenticate, enrollCourse); // ddawng ký khóa học
 router.get('/my', authenticate, getMyEnrollments); // 👈 route mới
 
 module.exports = router;

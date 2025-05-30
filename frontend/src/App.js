@@ -1,40 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
 import Home from './pages/Home/Home';
 import RoadMap from './pages/RoadMap/RoadMap';
 import Blog from './pages/Blog/Blog';
-
 import AuthModal from './components/Auth/AuthModal';
 import ProfilePage from './pages/Profile/ProfilePage';
-import MyCoursesPage from './pages/MyCourses/MyCoursesPage';// Assuming this is the correct import path
+import MyCoursesPage from './pages/MyCourses/MyCoursesPage';
 import CourseDetailPage from './pages/CourseDetailPage/CourseDetailPage';
+import PrivateRoute from './components/PrivateRoute/privateRoute';
 import './App.css';
+import SearchPage from './components/SeachPage/SearchPage';
 
-function App() {
+
+
+// Component con để sử dụng useLocation
+function AppContent() {
+  const location = useLocation();
+  
   // Auth Modal (gồm cả Login và Register)
   const [showAuthModal, setShowAuthModal] = useState(false);
   
   // User authentication state
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
+  const [authMode, setAuthMode] = useState('login');
 
+  const openLoginModal = () => {
+    setAuthMode('login');
+    setShowAuthModal(true);
+  };
 
-
-const [authMode, setAuthMode] = useState('login');
-
-const openLoginModal = () => {
-  setAuthMode('login');
-  setShowAuthModal(true);
-};
-
-const openRegisterModal = () => {
-  setAuthMode('register');
-  setShowAuthModal(true);
-};
-
+  const openRegisterModal = () => {
+    setAuthMode('register');
+    setShowAuthModal(true);
+  };
 
   // Check login status on app load
   useEffect(() => {
@@ -58,9 +59,14 @@ const openRegisterModal = () => {
     checkLoginStatus();
   }, []);
 
-  const openAuthModal = () => {
-    setShowAuthModal(true);
-  };
+  // Listen for navigation state to open modal
+  useEffect(() => {
+    if (location.state?.openAuthModal) {
+      openLoginModal();
+      // Clear the state to prevent modal from reopening on page refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const closeAuthModal = () => {
     setShowAuthModal(false);
@@ -92,46 +98,50 @@ const openRegisterModal = () => {
   };
 
   return (
-    <Router>
-      <div className="app">
-        <Header 
-          openLoginModal={openLoginModal}
-          openRegisterModal={openRegisterModal} // Since you use single AuthModal
-          isLoggedIn={isLoggedIn}
-          user={user}
-          onLogout={handleLogout}
-                  
-    
-
-        />
-        <main className="main-content">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/OnlineCodingWebsite" element={<Home />} />
-            <Route path="/lo-trinh" element={<RoadMap />} />
-            <Route path="/blog" element={<Blog />} />
-         
-           
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/my-courses" element={<MyCoursesPage />} />
-            <Route path="/courses/:id/all-lessons" element={<CourseDetailPage />} />
-
-            
-
-            <Route path="/settings" element={<div>Settings Page - Coming Soon</div>} />
-          </Routes>
-        </main>
-        <Footer />
-
-        {/* Hiển thị Auth Modal */}
-        {showAuthModal && (
-          <AuthModal 
-            onClose={closeAuthModal}
-            onLoginSuccess={handleLoginSuccess}
-            mode={authMode}
+    <div className="app">
+      <Header 
+        openLoginModal={openLoginModal}
+        openRegisterModal={openRegisterModal}
+        isLoggedIn={isLoggedIn}
+        user={user}
+        onLogout={handleLogout}
+      />
+      <main className="main-content">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/OnlineCodingWebsite" element={<Home />} />
+          <Route path="/lo-trinh" element={<RoadMap />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/my-courses" element={<MyCoursesPage />} />
+          <Route
+            path="/courses/:id/all-lessons"
+            element={<PrivateRoute element={<CourseDetailPage />} />}
           />
-        )}
-      </div>
+          <Route path="/settings" element={<div>Settings Page - Coming Soon</div>} />
+
+          <Route path="/courses" element={<SearchPage />} />
+        </Routes>
+      </main>
+      <Footer />
+
+      {/* Hiển thị Auth Modal */}
+      {showAuthModal && (
+        <AuthModal 
+          onClose={closeAuthModal}
+          onLoginSuccess={handleLoginSuccess}
+          mode={authMode}
+        />
+      )}
+    </div>
+  );
+}
+
+// Component chính App
+function App() {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   );
 }

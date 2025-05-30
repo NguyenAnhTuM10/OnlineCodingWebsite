@@ -408,16 +408,233 @@
 
 const db = require('../db');
 
-// Lấy tất cả khoá học
+// Lấy danh sách khoá học có phân trang
+// const getAllCourses = async (req, res) => {
+//   try {
+//     const page = parseInt(req.query.page, 10) || 1;
+//     const limit = parseInt(req.query.limit, 10) || 8;
+//     const offset = (page - 1) * limit;
+
+//     // Kiểm tra hợp lệ
+//     if (isNaN(limit) || isNaN(offset)) {
+//       return res.status(400).json({ error: 'Tham số phân trang không hợp lệ' });
+//     }
+
+//     // Lấy tổng số khoá học
+//     const [[{ total }]] = await db.execute('SELECT COUNT(*) AS total FROM courses');
+
+//     // ❗ Truy vấn với LIMIT + OFFSET được nhúng trực tiếp
+//     const [results] = await db.query(`SELECT * FROM courses LIMIT ${limit} OFFSET ${offset}`);
+
+//     res.json({
+//       data: results,
+//       totalItems: total,
+//       totalPages: Math.ceil(total / limit),
+//       currentPage: page,
+//     });
+//   } catch (err) {
+//     console.error('❌ Lỗi khi lấy danh sách khóa học:', err);
+//     res.status(500).json({ error: 'Lỗi server' });
+//   }
+// };
+
+
 const getAllCourses = async (req, res) => {
   try {
-    const [results] = await db.execute('SELECT * FROM courses');
-    res.json(results);
+    const { search = '', page = 1, limit = 8 } = req.query;
+
+    const parsedLimit = parseInt(limit);
+    const parsedPage = parseInt(page);
+    const offset = (parsedPage - 1) * parsedLimit;
+
+    console.log('🔍 limit:', parsedLimit, '| offset:', offset);
+
+    // Kiểm tra tham số hợp lệ
+    if (isNaN(parsedLimit) || isNaN(offset) || parsedLimit <= 0 || offset < 0) {
+      return res.status(400).json({ error: 'Tham số không hợp lệ' });
+    }
+
+    const searchTerm = `%${search}%`;
+
+    // ✅ GIẢI PHÁP: Chèn trực tiếp LIMIT và OFFSET vào SQL string
+    // (An toàn vì đã validate parsedLimit và offset là số)
+    const sql = `SELECT * FROM courses WHERE title LIKE ? LIMIT ${parsedLimit} OFFSET ${offset}`;
+    
+    console.log('🔍 SQL:', sql);
+    console.log('🔍 Params:', [searchTerm]);
+    
+    const [results] = await db.execute(sql, [searchTerm]);
+
+    // Đếm tổng số record
+    const [[{ count }]] = await db.execute(
+      'SELECT COUNT(*) AS count FROM courses WHERE title LIKE ?',
+      [searchTerm]
+    );
+
+    console.log('✅ Lấy được', results.length, 'khóa học');
+
+    res.json({
+      courses: results,
+      totalPages: Math.ceil(count / parsedLimit),
+      currentPage: parsedPage,
+      totalCourses: count
+    });
+
   } catch (err) {
     console.error('❌ Lỗi khi lấy danh sách khóa học:', err);
     res.status(500).json({ error: 'Lỗi server' });
   }
 };
+
+// Hàm tìm kiếm vẫn giữ nguyên vì đã đúng
+const searchCourses = async (req, res) => {
+  const q = req.query.q || '';
+  if (!q) return res.json([]); // trả mảng rỗng nếu query rỗng
+
+  try {
+    // Chuẩn hóa từ khóa tìm kiếm
+    const normalizedQuery = q.trim().toLowerCase();
+    
+    // Tách từ khóa thành các từ riêng lẻ để tìm kiếm linh hoạt hơn
+    const keywords = normalizedQuery.split(/\s+/).filter(word => word.length > 0);
+    
+    let query = '';
+    let params = [];
+
+    if (keywords.length === 0) {
+      return res.json([]);
+    }
+
+    // Xây dựng query tìm kiếm với nhiều điều kiện
+    if (keywords.length === 1) {
+      // Tìm kiếm đơn giản với 1 từ khóa
+      query = `
+        SELECT *, 
+               CASE 
+                 WHEN LOWER(title) LIKE ? THEN 1
+                 WHEN LOWER(description) LIKE ? THEN 2
+                 WHEN LOWER(instructor) LIKE ? THEN 3
+                 ELSE 4
+               END as relevance_score
+        FROM courses 
+        WHERE LOWER(title) LIKE ? 
+           OR LOWER(description) LIKE ? 
+           OR LOWER(instructor) LIKE ?
+           OR LOWER(category) LIKE ?
+        ORDER BY relevance_score, title
+        LIMIT 20
+      `;
+      const searchPattern = `%${normalizedQuery}%`;
+      params = [searchPattern, searchPattern, searchPattern, searchPattern, searchPattern, searchPattern, searchPattern];
+    } else {
+      // Tìm kiếm với nhiều từ khóa
+      const titleConditions = keywords.map(() => 'LOWER(title) LIKE ?').join(' AND ');
+      const descConditions = keywords.map(() => 'LOWER(description) LIKE ?').join(' AND ');
+      const instructorConditions = keywords.map(() => 'LOWER(instructor) LIKE ?').join(' AND ');
+      
+      // Tạo điều kiện OR cho từng từ khóa
+      const flexibleConditions = keywords.map(() => 
+        '(LOWER(title) LIKE ? OR LOWER(description) LIKE ? OR LOWER(instructor) LIKE ? OR LOWER(category) LIKE ?)'
+      ).join(' AND ');
+
+      query = `
+        SELECT *, 
+               CASE 
+                 WHEN (${titleConditions}) THEN 1
+                 WHEN (${descConditions}) THEN 2
+                 WHEN (${instructorConditions}) THEN 3
+                 ELSE 4
+               END as relevance_score
+        FROM courses 
+        WHERE ${flexibleConditions}
+        ORDER BY relevance_score, title
+        LIMIT 20
+      `;
+
+      // Tạo params cho tất cả các điều kiện
+      params = [];
+      
+      // Params cho relevance_score (title conditions)
+      keywords.forEach(keyword => {
+        params.push(`%${keyword}%`);
+      });
+      
+      // Params cho relevance_score (description conditions)
+      keywords.forEach(keyword => {
+        params.push(`%${keyword}%`);
+      });
+      
+      // Params cho relevance_score (instructor conditions)
+      keywords.forEach(keyword => {
+        params.push(`%${keyword}%`);
+      });
+      
+      // Params cho WHERE clause (flexible conditions)
+      keywords.forEach(keyword => {
+        const pattern = `%${keyword}%`;
+        params.push(pattern, pattern, pattern, pattern); // title, description, instructor, category
+      });
+    }
+
+    const [results] = await db.execute(query, params);
+    
+    // Thêm highlight cho kết quả (tùy chọn)
+    const highlightedResults = results.map(course => {
+      const highlightText = (text, query) => {
+        if (!text || !query) return text;
+        const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        return text.replace(regex, '<mark>$1</mark>');
+      };
+
+      return {
+        ...course,
+        highlighted_title: highlightText(course.title, normalizedQuery),
+        highlighted_description: course.description ? highlightText(course.description, normalizedQuery) : null,
+        search_score: course.relevance_score
+      };
+    });
+
+    res.json(highlightedResults);
+    console.log('✅ Kết quả tìm kiếm nâng cao:', results.length, 'khóa học');
+    console.log('🔍 Từ khóa:', keywords.join(', '));
+    
+  } catch (error) {
+    console.error('❌ Lỗi tìm kiếm khóa học:', error);
+    res.status(500).json({ error: 'Lỗi server' });
+  }
+};
+
+
+
+// const getAllCourses = async (req, res) => {
+//   try {
+//     const { search = '', page = 1, limit = 8 } = req.query;
+//     const offset = (page - 1) * limit;
+
+//     const searchTerm = `%${search}%`;
+
+//     const [results] = await db.execute(
+//       'SELECT * FROM courses WHERE title LIKE ? LIMIT ? OFFSET ?',
+//       [searchTerm, parseInt(limit), parseInt(offset)]
+//     );
+
+//     // Tổng số dòng để tính số trang
+//     const [[{ count }]] = await db.execute(
+//       'SELECT COUNT(*) AS count FROM courses WHERE title LIKE ?',
+//       [searchTerm]
+//     );
+
+//     res.json({
+//       courses: results,
+//       totalPages: Math.ceil(count / limit)
+//     });
+//   } catch (err) {
+//     console.error('❌ Lỗi khi lấy danh sách khóa học:', err);
+//     res.status(500).json({ error: 'Lỗi server' });
+//   }
+// };
+
+
 
 const getChaptersByCourseId = async (req, res) => {
   try {
@@ -486,6 +703,12 @@ const getLessonById = async (req, res) => {
 const getAllLessonsByCourseId = async (req, res) => {
   try {
     const courseId = req.params.id;
+
+    console.log('🔍 courseId:', courseId);
+
+    if (!courseId) {
+      return res.status(400).json({ error: 'courseId không được để trống' });
+    }
 
     const sql = `
       SELECT 
@@ -732,6 +955,7 @@ module.exports = {
   getAllLessonsByCourseId,
   getCourseCurriculum,
   getCourseStructure,
-  getCourseInfo
+  getCourseInfo,
+  searchCourses
 };
 

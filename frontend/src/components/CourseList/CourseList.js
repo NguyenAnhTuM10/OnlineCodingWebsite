@@ -22,7 +22,7 @@ function CourseList() {
         return res.json();
       })
       .then(data => {
-        console.log('📦 API Response:', data); // Debug log
+        
         
         // ✅ Sửa: Backend trả về data.courses, không phải data.data
         if (data && Array.isArray(data.courses)) {

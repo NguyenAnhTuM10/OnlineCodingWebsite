@@ -1,12 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const authenticate = require('../middlewares/authMiddleware');
+const {authenticate} = require('../middlewares/authMiddleware');
 const {
   getCommentsByLesson,
   addComment,
   updateComment,
   deleteComment
 } = require('../controllers/commentController');
+
+
+
+//app.use('/api/comments', commentsRoutes);
+
+
 
 // Lấy tất cả bình luận theo bài học
 router.get('/lessons/:lessonId', authenticate, getCommentsByLesson);

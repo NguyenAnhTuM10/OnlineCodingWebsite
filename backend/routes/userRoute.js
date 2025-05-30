@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { getCurrentUser,updateCurrentUser,getUserProgress,updateLessonProgress,changePassword } = require('../controllers/userController');
 // const progressController = require('../controllers/progressController');
-const authenticate = require('../middlewares/authMiddleware');
+const {authenticate} = require('../middlewares/authMiddleware');
 
 router.get('/me', authenticate, getCurrentUser); // 👈
 router.put('/me', authenticate, updateCurrentUser);

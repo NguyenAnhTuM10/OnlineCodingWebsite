@@ -9,6 +9,10 @@ const reviewRoutes = require('./routes/reviewRoute');
 const lessonProgressRoutes = require('./routes/lessonProgressRoutes');
 const userRoutes = require('./routes/userRoute');
 const blogRoutes = require('./routes/blogRoute');
+const adminCourseRoute = require('./routes/admin/courseAdminRoute');
+const commentsRoutes = require('./routes/commentRoute');
+
+
 
 
 
@@ -39,8 +43,10 @@ app.use('/api/blogs', blogRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/lesson-progress', lessonProgressRoutes);
 app.use('/api/users', userRoutes);
-
+app.use('/api/admin', adminCourseRoute);
+app.use('/api/comments', commentsRoutes);
 app.use('/api', courseRoutes);
+
 
 app.listen(PORT, () => {
   console.log(`🚀 Server đang chạy ở http://localhost:${PORT}`);

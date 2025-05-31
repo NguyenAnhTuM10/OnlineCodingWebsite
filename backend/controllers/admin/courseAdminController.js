@@ -118,33 +118,48 @@ exports.addLesson = async (req, res) => {
       return res.status(400).json({ error: 'Thiếu tiêu đề bài học' });
     }
 
-    // Kiểm tra chapter tồn tại
+    // Kiểm tra chương có tồn tại không
     const [chapter] = await db.execute('SELECT chapter_id FROM chapters WHERE chapter_id = ?', [id]);
     if (chapter.length === 0) {
       return res.status(404).json({ error: 'Không tìm thấy chương' });
     }
 
-    // Tự động tính position nếu không có
+    // Tính toán vị trí nếu không truyền vào
     let lessonPosition = position;
     if (!lessonPosition) {
       const [maxPos] = await db.execute('SELECT MAX(position) as max_pos FROM lessons WHERE chapter_id = ?', [id]);
       lessonPosition = (maxPos[0].max_pos || 0) + 1;
     }
 
+    // Chuyển đổi duration sang số giây nếu cần
+    function timeToSeconds(str) {
+      if (typeof str === 'string' && str.includes(':')) {
+        const [min, sec] = str.split(':').map(Number);
+        return min * 60 + sec;
+      }
+      return Number(str); // Nếu đã là số thì dùng luôn
+    }
+
+    const durationInSeconds = duration ? timeToSeconds(duration) : null;
+
+    // Thêm bài học
     const [result] = await db.execute(
-      'INSERT INTO lessons (chapter_id, title, content, video_url, duration, is_free, position) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [id, title, content, video_url, duration || null, is_free || false, lessonPosition]
+      `INSERT INTO lessons 
+       (chapter_id, title, content, video_url, duration, is_free, position) 
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [id, title, content, video_url, durationInSeconds, is_free || false, lessonPosition]
     );
 
-    res.status(201).json({ 
-      message: 'Thêm bài học thành công', 
-      lesson_id: result.insertId 
+    res.status(201).json({
+      message: 'Thêm bài học thành công',
+      lesson_id: result.insertId
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Lỗi server' });
+    res.status(500).json({ error: 'Lỗi server', message: error.message });
   }
 };
+
 
 // Thêm các function hữu ích khác
 exports.getAllCourses = async (req, res) => {

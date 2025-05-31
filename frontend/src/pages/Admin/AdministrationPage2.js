@@ -5,6 +5,8 @@ import { Search, Plus, Edit, Trash2, Eye, BookOpen, FileText, Users } from "luci
 
 
 // Thêm vào đầu file, sau các import
+
+
 const Modal = React.memo(({
   show,
   onClose,
@@ -13,13 +15,13 @@ const Modal = React.memo(({
   formData,
   onChange,
   error,
-  chapters,
+  chapters = [],
+  categories = [],
   editing
 }) => {
   if (!show) return null;
-  // ... phần code Modal giữ nguyên
 
-   return (
+  return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
       <div className="bg-white rounded-lg p-6 w-full max-w-md">
         <h2 className="text-xl font-semibold mb-4">
@@ -37,14 +39,69 @@ const Modal = React.memo(({
                 required
                 className="w-full border p-2 rounded"
               />
+
               {type === 'course' && (
-                <textarea
-                  name="description"
-                  placeholder="Mô tả"
-                  value={formData.description || ''}
-                  onChange={onChange}
-                  className="w-full border p-2 rounded"
-                />
+                <>
+                  <textarea
+                    name="description"
+                    placeholder="Mô tả"
+                    value={formData.description || ''}
+                    onChange={onChange}
+                    className="w-full border p-2 rounded"
+                  />
+                  <input
+                    type="text"
+                    name="thumbnail_url"
+                    placeholder="Ảnh thumbnail (URL)"
+                    value={formData.thumbnail_url || ''}
+                    onChange={onChange}
+                    className="w-full border p-2 rounded"
+                  />
+                  <input
+                    type="number"
+                    name="price"
+                    placeholder="Giá gốc (VND)"
+                    value={formData.price || ''}
+                    onChange={onChange}
+                    className="w-full border p-2 rounded"
+                  />
+                  <input
+                    type="number"
+                    name="discount_price"
+                    placeholder="Giá khuyến mãi (VND)"
+                    value={formData.discount_price || ''}
+                    onChange={onChange}
+                    className="w-full border p-2 rounded"
+                  />
+                  <select
+                    name="level"
+                    value={formData.level || ''}
+                    onChange={onChange}
+                    className="w-full border p-2 rounded"
+                    required
+                  >
+                    <option value="">Chọn cấp độ</option>
+                    <option value="beginner">Cơ bản</option>
+                    <option value="intermediate">Trung cấp</option>
+                    <option value="advanced">Nâng cao</option>
+                  </select>
+
+                  {categories.length > 0 && (
+                    <select
+                      name="category_id"
+                      value={formData.category_id || ''}
+                      onChange={onChange}
+                      className="w-full border p-2 rounded"
+                    >
+                      <option value="">Chọn danh mục</option>
+                      {categories.map(cat => (
+                        <option key={cat.category_id} value={cat.category_id}>
+                          {cat.name}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </>
               )}
             </>
           )}
@@ -107,6 +164,9 @@ const Modal = React.memo(({
     </div>
   );
 });
+
+
+
 
 
 
@@ -218,6 +278,7 @@ const apiService = {
 };
 
 const OptimizedAdminPage = () => {
+
   const [activeTab, setActiveTab] = useState('courses');
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -230,6 +291,77 @@ const OptimizedAdminPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({});
+
+
+
+
+  // Modal
+
+   const [modalVisible, setModalVisible] = useState(false);
+  
+  const [formError, setFormError] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  const [categories, setCategories] = useState([]);
+
+
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleClose = () => {
+    setModalVisible(false);
+    setFormData({});
+    setFormError('');
+    setIsEditing(false);
+  };
+
+
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  const token = localStorage.getItem('token');
+  if (!token) {
+    setFormError('Bạn chưa đăng nhập');
+    return;
+  }
+
+  if (!formData.title) {
+    setFormError('Vui lòng nhập tiêu đề');
+    return;
+  }
+
+  try {
+    const res = await fetch('http://localhost:3000/api/admin/courses', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData),
+    });
+
+    const text = await res.text();
+    console.log('Raw response:', text);
+
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      throw new Error('Server trả dữ liệu không hợp lệ');
+    }
+
+    if (!res.ok) throw new Error(data.error || 'Đã xảy ra lỗi');
+
+    alert('Tạo khóa học thành công');
+    handleClose();
+  } catch (err) {
+    setFormError(err.message);
+  }
+};
+
   
   const itemsPerPage = 5;
 
@@ -277,12 +409,14 @@ const OptimizedAdminPage = () => {
     currentPage * itemsPerPage
   );
 
-  const openModal = (type, item = null) => {
-    setModalType(type);
-    setEditingItem(item);
-    setFormData(item || {});
-    setShowModal(true);
-  };
+const openModal = (type, item = null) => {
+  console.log('Open modal:', type, item);
+  setModalType(type);
+  setEditingItem(item);
+  setFormData(item || {});
+  setModalVisible(true);
+};
+
 
   const closeModal = useCallback(() => {
     setShowModal(false);
@@ -405,6 +539,7 @@ const OptimizedAdminPage = () => {
           />
         </div>
         <button
+          // onClick={() => setModalVisible(true)}
           onClick={() => openModal('course')}
           className="ml-4 flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
           disabled={loading}
@@ -558,7 +693,8 @@ const OptimizedAdminPage = () => {
           <h2 className="text-2xl font-bold text-gray-900">{selectedCourse?.title}</h2>
         </div>
         <button
-          onClick={() => openModal('chapter')}
+          // onClick={() =>  setModalVisible(true)}
+            onClick={() => openModal('chapter')}
           className="flex items-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
           disabled={loading}
         >
@@ -609,7 +745,7 @@ const OptimizedAdminPage = () => {
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-medium">Chương {index + 1}: {chapter.title}</h3>
                   <button
-                    onClick={() => openModal('lesson')}
+                   onClick={() => openModal('lesson')}
                     className="text-blue-600 hover:text-blue-800 flex items-center text-sm"
                   >
                     <Plus className="w-4 h-4 mr-1" />
@@ -715,16 +851,17 @@ const OptimizedAdminPage = () => {
         {activeTab === 'course-detail' && <CourseDetailTab />}
       </div>
 
-      <Modal
-  show={showModal}
-  onClose={closeModal}
-  onSubmit={handleFormSubmit}
+   <Modal
+  show={modalVisible}
+  onClose={handleClose}
+  onSubmit={handleSubmit}
   type={modalType}
   formData={formData}
-  onChange={handleInputChange}
-  error={error}
-  chapters={chapters}
-  editing={!!editingItem}
+  onChange={handleChange}
+  error={formError}
+  chapters={chapters} // nếu dùng lesson
+  categories={categories} // nếu dùng danh mục
+  editing={isEditing}
 />
 
     </div>

@@ -11,8 +11,9 @@ import MyCoursesPage from './pages/MyCourses/MyCoursesPage';
 import CourseDetailPage from './pages/CourseDetailPage/CourseDetailPage';
 import PrivateRoute from './components/PrivateRoute/privateRoute';
 import './App.css';
+import './index.css'; // Import Tailwind CSS
 import SearchPage from './components/SeachPage/SearchPage';
-import AdministrationPage from './pages/Admin/AdministrationPage';
+import AdministrationPage from './pages/Admin/AdministrationPage2';
 
 
 
@@ -124,6 +125,9 @@ function AppContent() {
 
   return (
     <div className="app">
+
+      
+    <h1 className="text-4xl font-bold text-red-500">Hello Tailwind!</h1>
       <Header 
         openLoginModal={openLoginModal}
         openRegisterModal={openRegisterModal}

@@ -48,6 +48,8 @@ function LoginModal({ onClose, onSwitch, onLoginSuccess }) {
       // ✅ Lưu token và user info
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
+      // Sau khi login thành công
+      localStorage.setItem('adminToken', data.token);
       console.log('✅ Đăng nhập thành công:, token sau khi login: ', data.token);
 
       // ✅ Lưu remember me preference

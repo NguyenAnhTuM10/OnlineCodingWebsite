@@ -3,22 +3,62 @@ const db = require('../../db');
 
 exports.createCourse = async (req, res) => {
   try {
-    const { title, slug, description, thumbnail_url, category_id, price, discount_price, level } = req.body;
-    
-    // Validation
-    if (!title || !slug || !level) {
-      return res.status(400).json({ error: 'Thiếu thông tin bắt buộc' });
+    const {
+      title,
+      slug,
+      description,
+      thumbnail_url,
+      category_id,
+      price,
+      discount_price,
+      level
+    } = req.body;
+
+    // Kiểm tra bắt buộc
+    if (!title || !level) {
+      return res.status(400).json({ error: 'Thiếu title hoặc level' });
     }
+
+    // Hàm tự tạo slug nếu không có
+    function generateSlug(text) {
+      return text
+        .toString()
+        .toLowerCase()
+        .trim()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, '-')
+        .replace(/[^\w\-]+/g, '')
+        .replace(/\-\-+/g, '-');
+    }
+
+    const safeSlug = slug || generateSlug(title);
+    const safeDescription = description || null;
+    const safeThumbnail = thumbnail_url || null;
+    const safeCategoryId = category_id || null;
+    const safePrice = price !== undefined ? price : 0;
+    const safeDiscountPrice = discount_price !== undefined ? discount_price : null;
+    const safeLevel = level;
 
     const [result] = await db.execute(
       `INSERT INTO courses (title, slug, description, thumbnail_url, category_id, instructor_id, price, discount_price, level, status) 
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'draft')`,
-      [title, slug, description, thumbnail_url, category_id, req.user.user_id, price || 0, discount_price, level]
+      [
+        title,
+        safeSlug,
+        safeDescription,
+        safeThumbnail,
+        safeCategoryId,
+        req.user.user_id,
+        safePrice,
+        safeDiscountPrice,
+        safeLevel
+      ]
     );
 
-    res.status(201).json({ 
-      message: 'Tạo khóa học thành công', 
-      course_id: result.insertId 
+    res.status(201).json({
+      message: 'Tạo khóa học thành công',
+      course_id: result.insertId
     });
   } catch (error) {
     console.error(error);
@@ -28,6 +68,9 @@ exports.createCourse = async (req, res) => {
     res.status(500).json({ error: 'Lỗi server' });
   }
 };
+
+
+
 
 exports.updateCourse = async (req, res) => {
   try {

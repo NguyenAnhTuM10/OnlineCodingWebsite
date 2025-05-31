@@ -12,12 +12,37 @@ import CourseDetailPage from './pages/CourseDetailPage/CourseDetailPage';
 import PrivateRoute from './components/PrivateRoute/privateRoute';
 import './App.css';
 import SearchPage from './components/SeachPage/SearchPage';
+import AdministrationPage from './pages/Admin/AdministrationPage';
+
+
 
 
 
 // Component con để sử dụng useLocation
 function AppContent() {
   const location = useLocation();
+
+
+
+
+
+  
+
+  // Reset scroll position khi route thay đổi
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
+  // Reset scroll position khi page load/refresh
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      window.scrollTo(0, 0);
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
+
   
   // Auth Modal (gồm cả Login và Register)
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -121,6 +146,7 @@ function AppContent() {
           <Route path="/settings" element={<div>Settings Page - Coming Soon</div>} />
 
           <Route path="/courses" element={<SearchPage />} />
+          <Route path="/administration" element={<AdministrationPage />} />
         </Routes>
       </main>
       <Footer />

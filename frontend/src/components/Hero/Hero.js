@@ -8,7 +8,7 @@ function Hero() {
       <div className="container hero-container">
         <div className="hero-content">
           <h1 className="hero-title">
-            Học Lập Trình Để Đi Làm
+            Học Lập Trình Miễn Phí
           </h1>
           <p className="hero-description">
             Khóa học lập trình miễn phí, hệ thống bài học được thiết kế theo lộ trình từ cơ bản đến nâng cao,
@@ -34,10 +34,10 @@ function Hero() {
           </div>
         </div>
         <div className="hero-image">
-          <img 
-            src="https://fullstack.edu.vn/static/media/hero-img.c28614c0265904277fa7.png" 
+          {/* <img 
+            src="./hero.png" 
             alt="F8 Education" 
-          />
+          /> */}
         </div>
       </div>
     </section>

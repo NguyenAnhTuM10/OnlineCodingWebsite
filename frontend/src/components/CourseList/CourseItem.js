@@ -8,7 +8,7 @@ function CourseItem({ course }) {
       {/* <Link to={`/learning/${course.id}`} className="course-link"> */}
       <Link to={`/courses/${course.id}/all-lessons`} className="course-link">
         <div className="course-thumbnail">
-          <img src={course.image} alt={course.title} />
+          <img src={`http://localhost:3000/public${course.image}`} alt={course.title} />
         </div>
         <div className="course-info">
           <h3 className="course-title">{course.title}</h3>

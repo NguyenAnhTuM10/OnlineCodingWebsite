@@ -91,7 +91,7 @@ function Header({ openLoginModal, openRegisterModal, isLoggedIn, user, onLogout 
 
   // ✅ Handle course click from dropdown
   const handleCourseClick = (course) => {
-    navigate(`/courses/${course.slug || course.course_id}`);
+    navigate(`/courses/${course.course_id}/all-lessons`);
     setShowSearchDropdown(false);
     setSearchQuery('');
   };
@@ -114,11 +114,13 @@ function Header({ openLoginModal, openRegisterModal, isLoggedIn, user, onLogout 
         <div className="logo">
           <Link to="/">
             <img 
-              src="https://fullstack.edu.vn/static/media/f8-icon.18cd71cfcfa33566a22b.png" 
+              src="https://fullstack.edu.vn/assets/f8-icon-lV2rGpF0.png" 
               alt="F8 Logo" 
               className="logo-image" 
             />
-            <span className="logo-text">Học Lập Trình Để Đi Làm</span>
+            <span className="logo-text">Học Lập Trình Miễn Phí
+
+            </span>
           </Link>
         </div>
 
@@ -159,7 +161,7 @@ function Header({ openLoginModal, openRegisterModal, isLoggedIn, user, onLogout 
                       <div className="search-item-content">
                         {course.thumbnail_url && (
                           <img 
-                            src={course.thumbnail_url} 
+                            src={`http://localhost:3000/public${course.thumbnail_url}`} 
                             alt={course.title}
                             className="search-item-image"
                           />
@@ -260,10 +262,16 @@ function Header({ openLoginModal, openRegisterModal, isLoggedIn, user, onLogout 
                     <i className="icon">📚</i>
                     Khóa học của tôi
                   </Link>
-                  <Link to="/settings" className="dropdown-item" onClick={() => setIsProfileMenuOpen(false)}>
+
+                 {user?.role === 'admin' && (
+                  <Link to="/administration" className="dropdown-item" onClick={() => setIsProfileMenuOpen(false)}>
                     <i className="icon">⚙️</i>
-                    Cài đặt
+                    Quản Lí
                   </Link>
+                )}
+
+
+                 
                   <hr className="dropdown-divider" />
                   <button 
                     className="dropdown-item logout-item" 

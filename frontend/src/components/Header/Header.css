@@ -41,7 +41,7 @@
   display: none;
 }
 
-.search-bar {
+/* .search-bar {
   position: relative;
   flex: 1;
   max-width: 420px;
@@ -67,7 +67,7 @@
   background: transparent;
   border: none;
   font-size: 18px;
-}
+} */
 
 .nav-menu {
   margin-left: auto;

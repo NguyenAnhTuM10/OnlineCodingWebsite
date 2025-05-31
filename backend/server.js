@@ -11,6 +11,8 @@ const userRoutes = require('./routes/userRoute');
 const blogRoutes = require('./routes/blogRoute');
 const adminCourseRoute = require('./routes/admin/courseAdminRoute');
 const commentsRoutes = require('./routes/commentRoute');
+const videoRoutes = require('./routes/uploadVideoRoute');
+
 
 
 
@@ -46,6 +48,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/admin', adminCourseRoute);
 app.use('/api/comments', commentsRoutes);
 app.use('/api', courseRoutes);
+app.use('/api/videos',videoRoutes);
 
 
 app.listen(PORT, () => {

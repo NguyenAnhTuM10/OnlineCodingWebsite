@@ -147,6 +147,8 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import Comments from "../../components/Comments/Comments";
+import "./CourseDetailPage.css"; // Import CSS styles
 
 export default function CourseVideoPage() {
   const { id } = useParams(); // Lấy courseId từ URL
@@ -284,117 +286,45 @@ export default function CourseVideoPage() {
   };
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", fontFamily: "Arial, sans-serif" }}>
+    <div className="course-video-container">
       {/* Sidebar */}
-      <aside
-        style={{
-          width: "25%",
-          padding: "20px",
-          borderRight: "1px solid #ddd",
-          overflowY: "auto",
-          backgroundColor: "#f8f9fa"
-        }}
-      >
-        <div style={{ marginBottom: "20px" }}>
-          <h2 style={{ fontSize: "18px", fontWeight: "bold", marginBottom: "10px" }}>
-            Khóa học
-          </h2>
-          <div style={{ 
-            backgroundColor: "#e3f2fd", 
-            padding: "10px", 
-            borderRadius: "8px",
-            marginBottom: "16px"
-          }}>
-            <div style={{
-              width: "100%",
-              height: "8px",
-              backgroundColor: "#ddd",
-              borderRadius: "4px",
-              overflow: "hidden"
-            }}>
+      <aside className="sidebar">
+        <div className="course-header">
+          <h2 className="course-title">Khóa học</h2>
+          <div className="progress-container">
+            <div className="progress-bar">
               <div
-                style={{
-                  width: `${calculateProgress()}%`,
-                  height: "100%",
-                  backgroundColor: "#4caf50",
-                  transition: "width 0.3s ease"
-                }}
+                className="progress-fill"
+                style={{ width: `${calculateProgress()}%` }}
               />
             </div>
-            <span style={{ fontSize: "12px", color: "#666", marginTop: "4px", display: "block" }}>
+            <span className="progress-text">
               {calculateProgress()}% hoàn thành
             </span>
           </div>
         </div>
 
-        <h3 style={{ fontSize: "16px", fontWeight: "bold", marginBottom: "16px" }}>
-          Danh sách bài học
-        </h3>
+        <h3 className="lessons-title">Danh sách bài học</h3>
         {chapters.map((chapter) => (
-          <div key={chapter.chapter_id} style={{ marginBottom: "16px" }}>
-            <h4 style={{ fontWeight: "600", fontSize: "14px", color: "#333", marginBottom: "8px" }}>
-              {chapter.title}
-            </h4>
-            <ul style={{ paddingLeft: "10px", marginTop: "8px", listStyle: "none" }}>
+          <div key={chapter.chapter_id} className="chapter">
+            <h4 className="chapter-title">{chapter.title}</h4>
+            <ul className="lessons-list">
               {chapter.lessons.map((lesson) => (
-                <li key={lesson.lesson_id} style={{ marginBottom: "4px" }}>
+                <li key={lesson.lesson_id} className="lesson-item">
                   <button
                     onClick={() => loadLesson(lesson.lesson_id)}
-                    style={{
-                      width: "100%",
-                      textAlign: "left",
-                      padding: "8px 12px",
-                      border: "none",
-                      backgroundColor:
-                        currentLesson?.lesson_id === lesson.lesson_id ? "#2196f3" : "#fff",
-                      color: currentLesson?.lesson_id === lesson.lesson_id ? "#fff" : "#333",
-                      fontWeight:
-                        currentLesson?.lesson_id === lesson.lesson_id ? "bold" : "normal",
-                      cursor: "pointer",
-                      borderRadius: "4px",
-                      fontSize: "13px",
-                      transition: "all 0.2s",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px"
-                    }}
-                    onMouseEnter={(e) => {
-                      if (currentLesson?.lesson_id !== lesson.lesson_id) {
-                        e.target.style.backgroundColor = "#f0f0f0";
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (currentLesson?.lesson_id !== lesson.lesson_id) {
-                        e.target.style.backgroundColor = "#fff";
-                      }
-                    }}
+                    className={`lesson-button ${
+                      currentLesson?.lesson_id === lesson.lesson_id ? 'active' : ''
+                    }`}
                   >
-                    <span style={{
-                      width: "16px",
-                      height: "16px",
-                      borderRadius: "50%",
-                      backgroundColor: completedLessons.includes(lesson.lesson_id) ? "#4caf50" : "#ddd",
-                      color: "#fff",
-                      fontSize: "10px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0
-                    }}>
+                    <span className={`lesson-status ${
+                      completedLessons.includes(lesson.lesson_id) ? 'completed' : ''
+                    }`}>
                       {completedLessons.includes(lesson.lesson_id) ? "✓" : ""}
                     </span>
                     <span>{lesson.title}</span>
                     {lesson.is_free && (
-                      <span style={{
-                        fontSize: "10px",
-                        backgroundColor: "#4caf50",
-                        color: "#fff",
-                        padding: "2px 6px",
-                        borderRadius: "10px",
-                        marginLeft: "auto"
-                      }}>
-                        Free
-                      </span>
+                      <span className="free-badge">Free</span>
                     )}
                   </button>
                 </li>
@@ -405,28 +335,14 @@ export default function CourseVideoPage() {
       </aside>
 
       {/* Main Content */}
-      <main style={{ flex: 1, padding: "20px", backgroundColor: "#fff" }}>
+      <main className="main-content">
         {loadingLesson || !currentLesson ? (
-          <div style={{ 
-            display: "flex", 
-            alignItems: "center", 
-            justifyContent: "center", 
-            height: "400px",
-            fontSize: "16px",
-            color: "#666"
-          }}>
+          <div className="loading-container">
             Đang tải bài học...
           </div>
         ) : (
           <div>
-            <h1 style={{ 
-              fontSize: "24px", 
-              fontWeight: "bold", 
-              marginBottom: "16px",
-              color: "#333"
-            }}>
-              {currentLesson.title}
-            </h1>
+            <h1 className="lesson-title">{currentLesson.title}</h1>
 
             {/* Video Player */}
             {currentLesson.video_url.startsWith("http") && currentLesson.video_url.includes("youtu") ? (
@@ -436,25 +352,10 @@ export default function CourseVideoPage() {
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
-                style={{
-                  width: "100%",
-                  height: "500px",
-                  marginBottom: "24px",
-                  borderRadius: "8px",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                }}
+                className="video-player"
               />
             ) : (
-              <video
-                controls
-                style={{
-                  width: "100%",
-                  height: "500px",
-                  marginBottom: "24px",
-                  borderRadius: "8px",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                }}
-              >
+              <video controls className="video-player">
                 <source
                   src={
                     currentLesson.video_url.startsWith("http")
@@ -468,81 +369,35 @@ export default function CourseVideoPage() {
             )}
 
             {/* Lesson Content */}
-            <div style={{ marginBottom: "24px" }}>
-              <p style={{ 
-                fontSize: "16px", 
-                color: "#444", 
-                lineHeight: "1.6",
-                backgroundColor: "#f8f9fa",
-                padding: "16px",
-                borderRadius: "8px",
-                border: "1px solid #e9ecef"
-              }}>
-                {currentLesson.content}
-              </p>
+            <div className="lesson-content">
+              <p className="content-text">{currentLesson.content}</p>
             </div>
 
             {/* Action Buttons */}
-            <div style={{ 
-              display: "flex", 
-              justifyContent: "space-between", 
-              alignItems: "center",
-              marginBottom: "32px",
-              padding: "16px",
-              backgroundColor: "#f8f9fa",
-              borderRadius: "8px"
-            }}>
+            <div className="action-buttons">
               <button
                 onClick={handleCompleteLesson}
                 disabled={completedLessons.includes(currentLesson.lesson_id)}
-                style={{
-                  padding: "12px 24px",
-                  backgroundColor: completedLessons.includes(currentLesson.lesson_id) 
-                    ? "#4caf50" : "#2196f3",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "6px",
-                  cursor: completedLessons.includes(currentLesson.lesson_id) 
-                    ? "default" : "pointer",
-                  fontSize: "14px",
-                  fontWeight: "500",
-                  transition: "all 0.2s"
-                }}
+                className={`complete-btn ${
+                  completedLessons.includes(currentLesson.lesson_id) ? 'completed' : ''
+                }`}
               >
                 {completedLessons.includes(currentLesson.lesson_id) 
                   ? "✓ Đã hoàn thành" : "Đánh dấu hoàn thành"}
               </button>
 
-              <div style={{ display: "flex", gap: "12px" }}>
+              <div className="navigation-buttons">
                 <button
                   onClick={goToPrevLesson}
                   disabled={currentLessonIndex === 0}
-                  style={{
-                    padding: "10px 20px",
-                    backgroundColor: currentLessonIndex === 0 ? "#ccc" : "#fff",
-                    color: currentLessonIndex === 0 ? "#666" : "#333",
-                    border: "2px solid #ddd",
-                    borderRadius: "6px",
-                    cursor: currentLessonIndex === 0 ? "not-allowed" : "pointer",
-                    fontSize: "14px",
-                    transition: "all 0.2s"
-                  }}
+                  className="nav-btn prev"
                 >
                   ← Bài trước
                 </button>
                 <button
                   onClick={goToNextLesson}
                   disabled={currentLessonIndex === allLessons.length - 1}
-                  style={{
-                    padding: "10px 20px",
-                    backgroundColor: currentLessonIndex === allLessons.length - 1 ? "#ccc" : "#2196f3",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "6px",
-                    cursor: currentLessonIndex === allLessons.length - 1 ? "not-allowed" : "pointer",
-                    fontSize: "14px",
-                    transition: "all 0.2s"
-                  }}
+                  className="nav-btn next"
                 >
                   Bài tiếp theo →
                 </button>
@@ -550,147 +405,12 @@ export default function CourseVideoPage() {
             </div>
 
             {/* Comments Section */}
-            <div style={{ 
-              backgroundColor: "#fff",
-              border: "1px solid #e9ecef",
-              borderRadius: "8px",
-              padding: "20px"
-            }}>
-              <h3 style={{ 
-                fontSize: "18px", 
-                fontWeight: "600", 
-                marginBottom: "16px",
-                color: "#333"
-              }}>
-                Bình luận ({comments.length})
-              </h3>
-
-              {/* Add Comment Form */}
-              <div style={{ 
-                display: "flex", 
-                gap: "12px", 
-                marginBottom: "24px",
-                padding: "16px",
-                backgroundColor: "#f8f9fa",
-                borderRadius: "8px"
-              }}>
-                <input
-                  type="text"
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                  placeholder="Viết bình luận của bạn..."
-                  style={{
-                    flex: 1,
-                    padding: "10px 12px",
-                    border: "1px solid #ddd",
-                    borderRadius: "6px",
-                    fontSize: "14px",
-                    outline: "none"
-                  }}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      handleAddComment();
-                    }
-                  }}
-                />
-                <button
-                  onClick={handleAddComment}
-                  style={{
-                    padding: "10px 20px",
-                    backgroundColor: "#2196f3",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "6px",
-                    cursor: "pointer",
-                    fontSize: "14px",
-                    fontWeight: "500"
-                  }}
-                >
-                  Gửi
-                </button>
-              </div>
-
-              {/* Comments List */}
-              <div>
-                {comments.map((comment) => (
-                  <div
-                    key={comment.id}
-                    style={{
-                      display: "flex",
-                      gap: "12px",
-                      marginBottom: "16px",
-                      padding: "16px",
-                      backgroundColor: "#fff",
-                      border: "1px solid #e9ecef",
-                      borderRadius: "8px"
-                    }}
-                  >
-                    <img
-                      src={comment.avatar}
-                      alt={`${comment.user} avatar`}
-                      style={{
-                        width: "40px",
-                        height: "40px",
-                        borderRadius: "50%",
-                        objectFit: "cover"
-                      }}
-                    />
-                    <div style={{ flex: 1 }}>
-                      <div style={{ 
-                        display: "flex", 
-                        alignItems: "center", 
-                        gap: "8px", 
-                        marginBottom: "8px" 
-                      }}>
-                        <span style={{ 
-                          fontWeight: "600", 
-                          fontSize: "14px",
-                          color: "#333" 
-                        }}>
-                          {comment.user}
-                        </span>
-                        <span style={{ 
-                          fontSize: "12px", 
-                          color: "#666" 
-                        }}>
-                          {comment.createdAt}
-                        </span>
-                      </div>
-                      <p style={{ 
-                        fontSize: "14px", 
-                        color: "#444", 
-                        lineHeight: "1.5",
-                        marginBottom: "8px" 
-                      }}>
-                        {comment.content}
-                      </p>
-                      <div style={{ display: "flex", gap: "12px" }}>
-                        <button style={{
-                          background: "none",
-                          border: "none",
-                          color: "#666",
-                          cursor: "pointer",
-                          fontSize: "12px",
-                          padding: "4px 8px"
-                        }}>
-                          👍 Thích ({comment.likes})
-                        </button>
-                        <button style={{
-                          background: "none",
-                          border: "none",
-                          color: "#666",
-                          cursor: "pointer",
-                          fontSize: "12px",
-                          padding: "4px 8px"
-                        }}>
-                          Trả lời
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <Comments
+              comments={comments}
+              newComment={newComment}
+              setNewComment={setNewComment}
+              handleAddComment={handleAddComment}
+            />
           </div>
         )}
       </main>

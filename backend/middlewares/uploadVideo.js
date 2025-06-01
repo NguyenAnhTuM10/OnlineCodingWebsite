@@ -5,6 +5,7 @@ const path = require('path');
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, path.join(__dirname, '../public/uploads/videos'));
+    // cb(null, path.join(__dirname, '/uploads/videos'));
   },
   filename: function (req, file, cb) {
     // Loại bỏ khoảng trắng và ký tự đặc biệt nếu cần

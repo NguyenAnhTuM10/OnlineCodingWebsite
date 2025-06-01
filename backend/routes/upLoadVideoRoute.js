@@ -7,7 +7,8 @@ router.post('/upload', upload.single('video'), (req, res) => {
     return res.status(400).json({ error: 'Chưa chọn video' });
   }
 
-  const videoPath = `/public/uploads/videos/${req.file.filename}`;
+  const videoPath = `/uploads/videos/${req.file.filename}`;
+
   res.status(200).json({
     message: 'Upload video thành công',
     video_url: videoPath

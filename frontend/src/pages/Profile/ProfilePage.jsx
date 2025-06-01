@@ -230,13 +230,13 @@ function ProfilePage() {
               onChange={handleChange}
               placeholder="Nhập họ tên của bạn"
             />
-            <input
+            {/* <input
               type="url"
               name="avatar_url"
               value={form.avatar_url}
               onChange={handleChange}
               placeholder="Nhập URL ảnh đại diện"
-            />
+            /> */}
             <textarea
               name="bio"
               value={form.bio}

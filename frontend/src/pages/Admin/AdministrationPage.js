@@ -525,6 +525,36 @@ const handleEditLessonSubmit = async (e) => {
   );
 
   const Modal = () => {
+    const handleVideoUpload = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const formDataUpload = new FormData();
+  formDataUpload.append('video', file);
+
+  try {
+    const res = await fetch('http://localhost:3000/api/videos/upload', {
+      method: 'POST',
+      body: formDataUpload,
+    });
+
+    if (!res.ok) throw new Error('Upload thất bại');
+
+    const data = await res.json();
+
+    // Cập nhật video_url vào formData
+    setFormData((prev) => ({
+      ...prev,
+      video_url: data.video_url,
+    }));
+
+    alert('Upload video thành công!');
+  } catch (error) {
+    console.error('Lỗi upload video:', error);
+    alert('Upload video thất bại!');
+  }
+};
+
     if (!showModal) return null;
 
     return (
@@ -638,17 +668,35 @@ const handleEditLessonSubmit = async (e) => {
       className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       value={formData.content || ''}
       onChange={handleInputChange}
+      
     />
+
+
+
+<input
+  type="file"
+  accept="video/*"
+  onChange={handleVideoUpload}
+  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+/>
+
+
+{formData.video_url && (
+  <p className="text-green-600 mt-2 break-all">Đã upload: {formData.video_url}</p>
+)}
+
 
     {/* URL video */}
     <input
-      type="url"
+      type="text"
       name="video_url"
       placeholder="URL video (nếu có)"
       className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       value={formData.video_url || ''}
       onChange={handleInputChange}
     />
+
+    
 
     {/* Thời lượng (giây) */}
     <input
@@ -762,7 +810,7 @@ const EditLessonModal = () => {
 
           {/* URL video */}
           <input
-            type="url"
+            type="text"
             name="video_url"
             placeholder="URL video (nếu có)"
             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -830,7 +878,9 @@ const EditLessonModal = () => {
 };
 
 
-  const CoursesTab = () => (
+
+
+const CoursesTab = () => (
 
  
 

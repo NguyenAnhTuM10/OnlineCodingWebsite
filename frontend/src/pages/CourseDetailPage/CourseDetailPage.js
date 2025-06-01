@@ -85,23 +85,18 @@ export default function CourseVideoPage() {
         ))}
       </aside>
 
-      {/* Main content */}
-      <main style={{ flex: 1, padding: "20px" }}>
-        {loadingLesson || !currentLesson ? (
-          <div>Đang tải bài học...</div>
-        ) : (
-          <div>
-            <h1 style={{ fontSize: "24px", fontWeight: "bold", marginBottom: "16px" }}>
-              {currentLesson.title}
-            </h1>
-            <iframe
-  src={
-    currentLesson.video_url.startsWith("http")
-      ? currentLesson.video_url.includes("youtu")
-        ? convertYoutubeToEmbed(currentLesson.video_url)
-        : currentLesson.video_url
-      : `http://localhost:3000/public/${currentLesson.video_url}`
-  }
+     <main style={{ flex: 1, padding: "20px" }}>
+  {loadingLesson || !currentLesson ? (
+    <div>Đang tải bài học...</div>
+  ) : (
+    <div>
+      <h1 style={{ fontSize: "24px", fontWeight: "bold", marginBottom: "16px" }}>
+        {currentLesson.title}
+      </h1>
+
+      {currentLesson.video_url.startsWith("http") && currentLesson.video_url.includes("youtu") ? (
+        <iframe
+          src={convertYoutubeToEmbed(currentLesson.video_url)}
           title="Lesson Video"
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -114,11 +109,34 @@ export default function CourseVideoPage() {
             boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
           }}
         />
+      ) : (
+        <video
+          controls
+          style={{
+            width: "100%",
+            height: "500px",
+            marginBottom: "16px",
+            borderRadius: "4px",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+          }}
+        >
+          <source
+            src={
+              currentLesson.video_url.startsWith("http")
+                ? currentLesson.video_url
+                : `http://localhost:3000/public/${currentLesson.video_url}`
+            }
+            type="video/mp4"
+          />
+          Trình duyệt của bạn không hỗ trợ video.
+        </video>
+      )}
 
-            <p style={{ fontSize: "16px", color: "#444" }}>{currentLesson.content}</p>
-          </div>
-        )}
-      </main>
+      <p style={{ fontSize: "16px", color: "#444" }}>{currentLesson.content}</p>
+    </div>
+  )}
+</main>
+
     </div>
   );
 }

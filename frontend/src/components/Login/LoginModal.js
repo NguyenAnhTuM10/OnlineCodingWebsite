@@ -214,7 +214,7 @@ function LoginModal({ onClose, onSwitch, onLoginSuccess }) {
                 </button>
 
                 {/* Demo Login Button - Remove in production */}
-                <button 
+                {/* <button 
                   className="login-method-btn demo-login"
                   onClick={handleDemoLogin}
                   style={{backgroundColor: '#28a745', marginTop: '10px'}}
@@ -225,7 +225,7 @@ function LoginModal({ onClose, onSwitch, onLoginSuccess }) {
                     </svg>
                   </span>
                   <span>Demo Login (Testing)</span>
-                </button>
+                </button> */}
               </div>
 
               {/* Account registration and recovery links */}

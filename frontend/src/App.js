@@ -13,7 +13,7 @@ import PrivateRoute from './components/PrivateRoute/privateRoute';
 import './App.css';
 import './index.css'; // Import Tailwind CSS
 import SearchPage from './components/SeachPage/SearchPage';
-import AdministrationPage from './pages/Admin/AdministrationPage2';
+import AdministrationPage from './pages/Admin/AdministrationPage';
 
 
 

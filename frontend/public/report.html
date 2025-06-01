@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Báo cáo Đồ án - Website Học Lập Trình Online</title>
+    <style>
+      body {
+        font-family: "Times New Roman", serif;
+        line-height: 1.6;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        color: #333;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .header h1 {
+        font-size: 18px;
+        font-weight: bold;
+        margin: 5px 0;
+      }
+
+      .title {
+        text-align: center;
+        margin: 30px 0;
+      }
+
+      .title h2 {
+        font-size: 16px;
+        font-weight: bold;
+      }
+
+      .info-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+      }
+
+      .info-table td {
+        padding: 8px;
+        border: 1px solid #ccc;
+      }
+
+      .info-table .label {
+        font-weight: bold;
+        width: 30%;
+      }
+
+      h1 {
+        font-size: 16px;
+        font-weight: bold;
+        margin-top: 25px;
+        margin-bottom: 15px;
+      }
+
+      h2 {
+        font-size: 14px;
+        font-weight: bold;
+        margin-top: 20px;
+        margin-bottom: 10px;
+      }
+
+      h3 {
+        font-size: 13px;
+        font-weight: bold;
+        margin-top: 15px;
+        margin-bottom: 8px;
+      }
+
+      ul,
+      ol {
+        margin: 10px 0;
+        padding-left: 25px;
+      }
+
+      li {
+        margin: 5px 0;
+      }
+
+      .toc {
+        margin: 20px 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .toc li {
+        margin: 8px 0;
+      }
+
+      .code {
+        background-color: #f5f5f5;
+        padding: 10px;
+        border-radius: 4px;
+        font-family: "Courier New", monospace;
+        font-size: 12px;
+        margin: 10px 0;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 15px 0;
+      }
+
+      table th,
+      table td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: left;
+      }
+
+      table th {
+        background-color: #f0f0f0;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>TRƯỜNG ĐẠI HỌC CÔNG NGHỆ THÔNG TIN</h1>
+      <h1>KHOA HỆ THỐNG THÔNG TIN</h1>
+    </div>
+
+    <div class="title">
+      <h2>ĐỒ ÁN MÔN HỌC</h2>
+      <h2>Đề tài: "Xây dựng Website Học Lập Trình Online"</h2>
+    </div>
+
+    <table class="info-table">
+      <tr>
+        <td class="label">GVHD:</td>
+        <td>ThS. Trình Trọng Tín</td>
+      </tr>
+      <tr>
+        <td class="label">Môn:</td>
+        <td>Phát triển ứng dụng Web</td>
+      </tr>
+      <tr>
+        <td class="label">Lớp:</td>
+        <td>IS207.P21</td>
+      </tr>
+      <tr>
+        <td class="label">Nhóm sinh viên thực hiện:</td>
+        <td>
+          Họ và tên 1 - 19xxxxxx<br />
+          Họ và tên 2 - 20xxxxxx<br />
+          Họ và tên 3 - 21xxxxxx<br />
+          Họ và tên 4 - 21xxxxxx
+        </td>
+      </tr>
+    </table>
+
+    <div style="text-align: center; margin: 30px 0">
+      <strong>Tp. Hồ Chí Minh, 06/2025</strong>
+    </div>
+
+    <h1>MỤC LỤC</h1>
+    <ol class="toc">
+      <li>Giới thiệu về đề tài</li>
+      <li>Phân tích yêu cầu</li>
+      <li>Triển khai và cài đặt</li>
+      <li>Kết quả thực hiện</li>
+      <li>Kết luận và hướng phát triển</li>
+      <li>Tài liệu tham khảo</li>
+    </ol>
+
+    <h1>1. GIỚI THIỆU VỀ ĐỀ TÀI</h1>
+
+    <h2>1.1. Lý do chọn đề tài</h2>
+    <ul>
+      <li>
+        <strong>Xu hướng thực tế:</strong> Trong thời đại số hóa hiện nay, nhu
+        cầu học lập trình trực tuyến ngày càng tăng cao. Đặc biệt sau đại dịch
+        COVID-19, việc học online đã trở thành xu hướng chủ đạo.
+      </li>
+      <li>
+        <strong>Nhu cầu người dùng:</strong> Nhiều người muốn học lập trình
+        nhưng gặp khó khăn về thời gian, địa điểm và chi phí. Website học lập
+        trình online giúp giải quyết những vấn đề này.
+      </li>
+      <li>
+        <strong>Phù hợp với kiến thức:</strong> Đề tài cho phép áp dụng toàn bộ
+        kiến thức đã học về Frontend, Backend, và quản lý cơ sở dữ liệu.
+      </li>
+    </ul>
+
+    <h2>1.2. Mục tiêu của đồ án</h2>
+    <ul>
+      <li>
+        <strong>G1:</strong> Xây dựng ứng dụng Web học lập trình online với đầy
+        đủ các chức năng cơ bản như đăng ký khóa học, xem bài giảng, theo dõi
+        tiến độ học tập.
+      </li>
+      <li>
+        <strong>G2:</strong> Áp dụng kiến thức về Frontend (React.js), Backend
+        (Node.js/Express), và cơ sở dữ liệu (MySQL) để tạo ra một hệ thống hoàn
+        chỉnh.
+      </li>
+      <li>
+        <strong>G3:</strong> Tạo ra một nền tảng giáo dục trực tuyến thân thiện,
+        dễ sử dụng và có khả năng mở rộng.
+      </li>
+    </ul>
+
+    <h2>1.3. Phạm vi thực hiện</h2>
+    <h3>Chức năng được xây dựng:</h3>
+    <ul>
+      <li>Hệ thống đăng ký/đăng nhập người dùng</li>
+      <li>Quản lý khóa học và bài giảng</li>
+      <li>Theo dõi tiến độ học tập</li>
+      <li>Hệ thống bình luận và đánh giá</li>
+      <li>Giao diện quản trị viên</li>
+    </ul>
+
+    <h3>Đối tượng sử dụng:</h3>
+    <ul>
+      <li>Học viên muốn học lập trình</li>
+      <li>Giảng viên tạo và quản lý khóa học</li>
+      <li>Quản trị viên hệ thống</li>
+    </ul>
+
+    <h3>Các giới hạn:</h3>
+    <ul>
+      <li>Chưa tích hợp thanh toán online</li>
+      <li>Chưa có hệ thống AI hỗ trợ học tập</li>
+      <li>Chưa có tính năng livestream</li>
+    </ul>
+
+    <h1>2. PHÂN TÍCH YÊU CẦU</h1>
+
+    <h2>2.1. Yêu cầu chức năng</h2>
+
+    <h3>2.1.1. Quản lý người dùng</h3>
+    <ul>
+      <li>Đăng ký tài khoản với email và mật khẩu</li>
+      <li>Đăng nhập/đăng xuất hệ thống</li>
+      <li>Quản lý thông tin cá nhân</li>
+      <li>Phân quyền người dùng (học viên, giảng viên, admin)</li>
+    </ul>
+
+    <h3>2.1.2. Quản lý khóa học</h3>
+    <ul>
+      <li>Hiển thị danh sách các khóa học</li>
+      <li>Xem chi tiết thông tin khóa học</li>
+      <li>Đăng ký học khóa học</li>
+      <li>Theo dõi danh sách khóa học đã đăng ký</li>
+    </ul>
+
+    <h3>2.1.3. Quản lý bài giảng</h3>
+    <ul>
+      <li>Xem video bài giảng</li>
+      <li>Theo dõi tiến độ học tập từng bài</li>
+      <li>Đánh dấu bài đã hoàn thành</li>
+      <li>Lưu lại vị trí xem video</li>
+    </ul>
+
+    <h3>2.1.4. Hệ thống tương tác</h3>
+    <ul>
+      <li>Bình luận trong từng bài học</li>
+      <li>Đánh giá và nhận xét khóa học</li>
+      <li>Tìm kiếm khóa học theo từ khóa</li>
+    </ul>
+
+    <h3>2.1.5. Giao diện quản trị</h3>
+    <ul>
+      <li>Quản lý CRUD khóa học</li>
+      <li>Thống kê số lượng học viên</li>
+      <li>Quản lý bài giảng và video</li>
+      <li>Báo cáo tiến độ học tập</li>
+    </ul>
+
+    <h2>2.2. Yêu cầu phi chức năng</h2>
+    <ul>
+      <li>
+        <strong>Hiệu năng:</strong> Website phải tải nhanh, xử lý được 100+
+        người dùng đồng thời
+      </li>
+      <li>
+        <strong>Giao diện:</strong> Thiết kế responsive, thân thiện trên mọi
+        thiết bị
+      </li>
+      <li>
+        <strong>Bảo mật:</strong> Mã hóa mật khẩu, bảo vệ thông tin người dùng
+      </li>
+      <li>
+        <strong>Khả năng mở rộng:</strong> Kiến trúc cho phép thêm tính năng mới
+        dễ dàng
+      </li>
+    </ul>
+
+    <h1>3. TRIỂN KHAI VÀ CÀI ĐẶT</h1>
+
+    <h2>3.1. Mô tả kiến trúc hệ thống</h2>
+    <p>
+      Hệ thống được thiết kế theo mô hình Client-Server với kiến trúc 3 tầng:
+    </p>
+    <ul>
+      <li><strong>Presentation Layer:</strong> React.js frontend</li>
+      <li><strong>Business Logic Layer:</strong> Node.js/Express.js backend</li>
+      <li><strong>Data Access Layer:</strong> MySQL database</li>
+    </ul>
+
+    <h2>3.2. Công nghệ và công cụ sử dụng</h2>
+
+    <h3>Frontend:</h3>
+    <ul>
+      <li>
+        <strong>React.js:</strong> Framework chính cho giao diện người dùng
+      </li>
+      <li><strong>Tailwind CSS:</strong> Framework CSS cho styling</li>
+      <li><strong>JavaScript ES6+:</strong> Ngôn ngữ lập trình</li>
+      <li><strong>Axios:</strong> Thư viện gọi API</li>
+    </ul>
+
+    <h3>Backend:</h3>
+    <ul>
+      <li><strong>Node.js:</strong> Runtime environment</li>
+      <li><strong>Express.js:</strong> Web framework</li>
+      <li><strong>MySQL:</strong> Hệ quản trị cơ sở dữ liệu</li>
+      <li><strong>JWT:</strong> JSON Web Token cho xác thực</li>
+      <li><strong>Bcrypt:</strong> Mã hóa mật khẩu</li>
+      <li><strong>Multer:</strong> Upload file/video</li>
+    </ul>
+
+    <h3>Công cụ khác:</h3>
+    <ul>
+      <li><strong>Git/GitHub:</strong> Quản lý mã nguồn</li>
+      <li><strong>Postman:</strong> Test API</li>
+      <li><strong>VS Code:</strong> IDE phát triển</li>
+    </ul>
+
+    <h2>3.3. Thiết kế Database (ERD)</h2>
+
+    <h3>Các bảng chính:</h3>
+
+    <table>
+      <tr>
+        <th>Bảng</th>
+        <th>Các trường chính</th>
+        <th>Mô tả</th>
+      </tr>
+      <tr>
+        <td>Users</td>
+        <td>user_id, username, email, password_hash, role</td>
+        <td>Lưu thông tin người dùng</td>
+      </tr>
+      <tr>
+        <td>Courses</td>
+        <td>course_id, title, description, instructor_id, image_url</td>
+        <td>Thông tin khóa học</td>
+      </tr>
+      <tr>
+        <td>Lessons</td>
+        <td>lesson_id, course_id, title, video_url, order_index</td>
+        <td>Bài giảng trong khóa học</td>
+      </tr>
+      <tr>
+        <td>Enrollments</td>
+        <td>enrollment_id, user_id, course_id, enrolled_at</td>
+        <td>Đăng ký khóa học</td>
+      </tr>
+      <tr>
+        <td>Lesson_Progress</td>
+        <td>progress_id, user_id, lesson_id, completed, watch_time</td>
+        <td>Tiến độ học tập</td>
+      </tr>
+      <tr>
+        <td>Comments</td>
+        <td>comment_id, user_id, lesson_id, content</td>
+        <td>Bình luận bài học</td>
+      </tr>
+      <tr>
+        <td>Reviews</td>
+        <td>review_id, user_id, course_id, rating, comment</td>
+        <td>Đánh giá khóa học</td>
+      </tr>
+    </table>
+
+    <h2>3.4. Hướng dẫn cài đặt và chạy thử</h2>
+
+    <h3>Yêu cầu hệ thống:</h3>
+    <ul>
+      <li>Node.js >= 18.0</li>
+      <li>MySQL >= 8.0</li>
+      <li>Git</li>
+    </ul>
+
+    <h3>Các bước cài đặt:</h3>
+
+    <p><strong>1. Clone project:</strong></p>
+    <div class="code">git clone [repository-url] cd OnlineCodingWebsite</div>
+
+    <p><strong>2. Cài đặt Backend:</strong></p>
+    <div class="code">cd backend npm install</div>
+
+    <p><strong>3. Cấu hình database:</strong></p>
+    <ul>
+      <li>Tạo database mới trong MySQL</li>
+      <li>Import file fullstack.sql</li>
+      <li>Cấu hình file .env</li>
+    </ul>
+
+    <p><strong>4. Chạy Backend:</strong></p>
+    <div class="code">npm start</div>
+
+    <p><strong>5. Cài đặt Frontend:</strong></p>
+    <div class="code">cd ../frontend npm install npm start</div>
+
+    <p><strong>6. Truy cập ứng dụng:</strong></p>
+    <ul>
+      <li>Frontend: http://localhost:3000</li>
+      <li>Backend API: http://localhost:5000</li>
+    </ul>
+
+    <h1>4. KẾT QUẢ THỰC HIỆN</h1>
+
+    <h2>4.1. Các chức năng đã hoàn thành</h2>
+
+    <h3>4.1.1. Giao diện người dùng</h3>
+    <ul>
+      <li>
+        <strong>Trang chủ:</strong> Hiển thị các khóa học nổi bật, giới thiệu
+        nền tảng
+      </li>
+      <li><strong>Danh sách khóa học:</strong> Lọc và tìm kiếm khóa học</li>
+      <li>
+        <strong>Chi tiết khóa học:</strong> Thông tin chi tiết, danh sách bài
+        học
+      </li>
+      <li><strong>Trang học:</strong> Xem video, theo dõi tiến độ</li>
+      <li>
+        <strong>Hồ sơ cá nhân:</strong> Quản lý thông tin, khóa học đã đăng ký
+      </li>
+    </ul>
+
+    <h3>4.1.2. Hệ thống xác thực</h3>
+    <ul>
+      <li>Đăng ký tài khoản với validation</li>
+      <li>Đăng nhập/đăng xuất an toàn</li>
+      <li>Bảo vệ route với JWT token</li>
+    </ul>
+
+    <h3>4.1.3. Giao diện quản trị</h3>
+    <ul>
+      <li>Dashboard thống kê tổng quan</li>
+      <li>Quản lý CRUD khóa học đầy đủ</li>
+      <li>Upload và quản lý video bài giảng</li>
+      <li>Báo cáo tiến độ học tập của học viên</li>
+    </ul>
+
+    <h2>4.2. Đánh giá mức độ hoàn thành</h2>
+
+    <table>
+      <tr>
+        <th>Mục tiêu</th>
+        <th>Điểm</th>
+        <th>Ghi chú</th>
+      </tr>
+      <tr>
+        <td>G1 - Xây dựng ứng dụng Web học lập trình</td>
+        <td>85/100</td>
+        <td>Đã hoàn thành các chức năng cơ bản</td>
+      </tr>
+      <tr>
+        <td>G2 - Áp dụng kiến thức Frontend/Backend</td>
+        <td>90/100</td>
+        <td>Sử dụng thành thạo React.js và Node.js</td>
+      </tr>
+      <tr>
+        <td>G3 - Tạo nền tảng giáo dục thân thiện</td>
+        <td>80/100</td>
+        <td>Giao diện đẹp, cần cải thiện UX</td>
+      </tr>
+    </table>
+
+    <h1>5. KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN</h1>
+
+    <h2>5.1. Những gì đã đạt được</h2>
+    <ul>
+      <li>Xây dựng thành công một website học lập trình online hoàn chỉnh</li>
+      <li>Áp dụng được kiến thức về Full-stack development</li>
+      <li>Tạo ra sản phẩm có tính thực tiễn cao</li>
+      <li>Nắm vững quy trình phát triển web từ A-Z</li>
+    </ul>
+
+    <h2>5.2. Khó khăn gặp phải</h2>
+    <ul>
+      <li>
+        <strong>Xử lý video:</strong> Upload và streaming video với kích thước
+        lớn
+      </li>
+      <li>
+        <strong>Đồng bộ dữ liệu:</strong> Theo dõi tiến độ học tập real-time
+      </li>
+      <li>
+        <strong>Tối ưu hiệu năng:</strong> Tải trang nhanh với nhiều media
+        content
+      </li>
+      <li>
+        <strong>Responsive design:</strong> Đảm bảo giao diện đẹp trên mọi thiết
+        bị
+      </li>
+    </ul>
+
+    <h2>5.3. Hướng phát triển thêm</h2>
+
+    <h3>Chức năng nâng cao:</h3>
+    <ul>
+      <li>Tích hợp hệ thống thanh toán online (VNPay, Momo)</li>
+      <li>Thêm tính năng livestream cho bài giảng trực tiếp</li>
+      <li>Xây dựng hệ thống AI chatbot hỗ trợ học tập</li>
+      <li>Tạo forum thảo luận cho học viên</li>
+    </ul>
+
+    <h3>Cải tiến kỹ thuật:</h3>
+    <ul>
+      <li>Sử dụng CDN để tối ưu tốc độ tải video</li>
+      <li>Implement Progressive Web App (PWA)</li>
+      <li>Thêm unit test và integration test</li>
+      <li>Deploy lên cloud platform (AWS, Google Cloud)</li>
+    </ul>
+
+    <h1>6. TÀI LIỆU THAM KHẢO</h1>
+    <ol>
+      <li>React.js Official Documentation - https://reactjs.org/docs/</li>
+      <li>Node.js Documentation - https://nodejs.org/en/docs/</li>
+      <li>Express.js Guide - https://expressjs.com/</li>
+      <li>MySQL Documentation - https://dev.mysql.com/doc/</li>
+      <li>MDN Web Docs - https://developer.mozilla.org/</li>
+      <li>"Learning React" by Alex Banks & Eve Porcello</li>
+      <li>"Node.js Design Patterns" by Mario Casciaro</li>
+      <li>Stack Overflow - https://stackoverflow.com/</li>
+    </ol>
+
+    <h1>PHỤ LỤC</h1>
+
+    <h2>A. Mã nguồn</h2>
+    <ul>
+      <li><strong>GitHub Repository:</strong> [Link GitHub của dự án]</li>
+      <li><strong>Frontend Code:</strong> /frontend directory</li>
+      <li><strong>Backend Code:</strong> /backend directory</li>
+      <li><strong>Database Schema:</strong> /fullstack.sql</li>
+    </ul>
+
+    <h2>B. Nhật ký làm việc</h2>
+
+    <h3>Tuần 1-2: Phân tích và thiết kế</h3>
+    <ul>
+      <li>Thành viên 1: Phân tích yêu cầu, thiết kế UI/UX</li>
+      <li>Thành viên 2: Thiết kế database, setup project</li>
+      <li>Thành viên 3: Research công nghệ, tạo wireframe</li>
+      <li>Thành viên 4: Viết tài liệu thiết kế</li>
+    </ul>
+
+    <h3>Tuần 3-4: Phát triển Backend</h3>
+    <ul>
+      <li>Thành viên 1: API authentication</li>
+      <li>Thành viên 2: Course management APIs</li>
+      <li>Thành viên 3: User management APIs</li>
+      <li>Thành viên 4: Database setup và migration</li>
+    </ul>
+
+    <h3>Tuần 5-6: Phát triển Frontend</h3>
+    <ul>
+      <li>Thành viên 1: Authentication pages</li>
+      <li>Thành viên 2: Course listing và detail pages</li>
+      <li>Thành viên 3: Video player và progress tracking</li>
+      <li>Thành viên 4: Admin dashboard</li>
+    </ul>
+
+    <h3>Tuần 7-8: Integration và Testing</h3>
+    <ul>
+      <li>Toàn bộ team: Tích hợp Frontend-Backend</li>
+      <li>Testing và fix bugs</li>
+      <li>Tối ưu hiệu năng</li>
+      <li>Viết tài liệu và chuẩn bị demo</li>
+    </ul>
+  </body>
+</html>

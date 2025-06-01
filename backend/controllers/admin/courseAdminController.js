@@ -269,3 +269,73 @@ exports.getCourseDetails = async (req, res) => {
     res.status(500).json({ error: 'Lỗi server' });
   }
 };
+
+
+
+
+
+
+exports.updateLesson = async (req, res) => {
+  try {
+    const { id } = req.params; // lesson_id
+    const { title, content, video_url, duration, is_free, position } = req.body;
+
+    // Kiểm tra lesson có tồn tại không
+    const [lesson] = await db.execute('SELECT lesson_id FROM lessons WHERE lesson_id = ?', [id]);
+    if (lesson.length === 0) {
+      return res.status(404).json({ error: 'Không tìm thấy bài học' });
+    }
+
+    // Chuyển đổi duration sang số giây nếu cần
+    function timeToSeconds(str) {
+      if (typeof str === 'string' && str.includes(':')) {
+        const [min, sec] = str.split(':').map(Number);
+        return min * 60 + sec;
+      }
+      return Number(str); // Nếu đã là số thì dùng luôn
+    }
+
+    const durationInSeconds = duration ? timeToSeconds(duration) : null;
+
+    // Cập nhật bài học
+    const [result] = await db.execute(
+      `UPDATE lessons 
+       SET title = ?, content = ?, video_url = ?, duration = ?, is_free = ?, position = ?
+       WHERE lesson_id = ?`,
+      [title, content, video_url, durationInSeconds, is_free, position, id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Không tìm thấy bài học để cập nhật' });
+    }
+
+    res.json({ message: 'Cập nhật bài học thành công' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Lỗi server', message: error.message });
+  }
+};
+
+exports.deleteLesson = async (req, res) => {
+  try {
+    const { id } = req.params; // lesson_id
+
+    // Kiểm tra lesson có tồn tại không
+    const [lesson] = await db.execute('SELECT lesson_id FROM lessons WHERE lesson_id = ?', [id]);
+    if (lesson.length === 0) {
+      return res.status(404).json({ error: 'Không tìm thấy bài học' });
+    }
+
+    // Xóa bài học
+    const [result] = await db.execute('DELETE FROM lessons WHERE lesson_id = ?', [id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Không thể xóa bài học' });
+    }
+
+    res.json({ message: 'Xóa bài học thành công' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Lỗi server', message: error.message });
+  }
+};

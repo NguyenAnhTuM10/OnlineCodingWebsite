@@ -166,6 +166,11 @@ const OptimizedAdminPage = () => {
     currentPage * itemsPerPage
   );
 
+
+
+ 
+
+
   const openModal = (type, item = null) => {
     setModalType(type);
     setEditingItem(item);
@@ -180,35 +185,39 @@ const OptimizedAdminPage = () => {
     setError('');
   };
 
-  const handleFormSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      setLoading(true);
-      setError('');
 
-      if (modalType === 'course') {
-        if (editingItem) {
-          await apiService.updateCourse(editingItem.course_id, formData);
-        } else {
-          await apiService.createCourse(formData);
+
+    const handleFormSubmit =useCallback(async (e) => {
+      e.preventDefault();
+      try {
+        setLoading(true);
+        setError('');
+  
+        if (modalType === 'course') {
+          if (editingItem) {
+            await apiService.updateCourse(editingItem.course_id, formData);
+          } else {
+            await apiService.createCourse(formData);
+          }
+          await loadCourses();
+  
+        } else if (modalType === 'chapter') {
+          await apiService.addChapter(selectedCourse.course_id, formData);
+          await loadCourseDetails(selectedCourse.course_id);
+        } else if (modalType === 'lesson') {
+          const chapterId = formData.chapter_id;
+          await apiService.addLesson(chapterId, formData);
+          await loadCourseDetails(selectedCourse.course_id);
         }
-        await loadCourses();
-      } else if (modalType === 'chapter') {
-        await apiService.addChapter(selectedCourse.course_id, formData);
-        await loadCourseDetails(selectedCourse.course_id);
-      } else if (modalType === 'lesson') {
-        const chapterId = formData.chapter_id;
-        await apiService.addLesson(chapterId, formData);
-        await loadCourseDetails(selectedCourse.course_id);
+  
+        closeModal();
+      } catch (err) {
+        setError('Có lỗi xảy ra: ' + err.message);
+      } finally {
+        setLoading(false);
       }
-
-      closeModal();
-    } catch (err) {
-      setError('Có lỗi xảy ra: ' + err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+   }, [modalType, editingItem, formData, selectedCourse]);
+ 
 
   const handleDelete = async (courseId) => {
     if (window.confirm('Bạn chắc chắn muốn xóa khóa học này?')) {
@@ -348,62 +357,82 @@ const OptimizedAdminPage = () => {
               </>
             )}
             
-            {modalType === 'lesson' && (
-              <>
-                <select
-                  name="chapter_id"
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={formData.chapter_id || ''}
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option value="">Chọn chương</option>
-                  {chapters.map(chapter => (
-                    <option key={chapter.chapter_id} value={chapter.chapter_id}>
-                      {chapter.title}
-                    </option>
-                  ))}
-                </select>
-                
-                <textarea
-                  name="content"
-                  placeholder="Nội dung bài học"
-                  rows="4"
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={formData.content || ''}
-                  onChange={handleInputChange}
-                />
-                
-                <input
-                  type="url"
-                  name="video_url"
-                  placeholder="URL video"
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={formData.video_url || ''}
-                  onChange={handleInputChange}
-                />
-                
-                <input
-                  type="number"
-                  name="duration"
-                  placeholder="Thời lượng (giây)"
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={formData.duration || ''}
-                  onChange={handleInputChange}
-                />
-                
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    name="is_free"
-                    checked={formData.is_free || false}
-                    onChange={(e) => setFormData(prev => ({ ...prev, is_free: e.target.checked }))}
-                    className="mr-2"
-                  />
-                  Miễn phí
-                </label>
-              </>
-            )}
+           {modalType === 'lesson' && (
+  <>
+    {/* Chọn chương */}
+    <select
+      name="chapter_id"
+      className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      value={formData.chapter_id || ''}
+      onChange={handleInputChange}
+      required
+    >
+      <option value="">Chọn chương</option>
+      {chapters.map((chapter) => (
+        <option key={chapter.chapter_id} value={chapter.chapter_id}>
+          {chapter.title}
+        </option>
+      ))}
+    </select>
+
+    {/* Tiêu đề bài học */}
+    <input
+      type="text"
+      name="title"
+      placeholder="Tiêu đề bài học"
+      className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      value={formData.title || ''}
+      onChange={handleInputChange}
+      required
+    />
+
+    {/* Nội dung */}
+    <textarea
+      name="content"
+      placeholder="Nội dung bài học"
+      rows="4"
+      className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      value={formData.content || ''}
+      onChange={handleInputChange}
+    />
+
+    {/* URL video */}
+    <input
+      type="url"
+      name="video_url"
+      placeholder="URL video (nếu có)"
+      className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      value={formData.video_url || ''}
+      onChange={handleInputChange}
+    />
+
+    {/* Thời lượng (giây) */}
+    <input
+      type="number"
+      name="duration"
+      placeholder="Thời lượng (giây)"
+      className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      value={formData.duration || ''}
+      onChange={handleInputChange}
+      min="0"
+    />
+
+    {/* Checkbox miễn phí */}
+    <label className="flex items-center">
+      <input
+        type="checkbox"
+        name="is_free"
+        checked={formData.is_free || false}
+        onChange={(e) =>
+          setFormData((prev) => ({ ...prev, is_free: e.target.checked }))
+        }
+        className="mr-2"
+      />
+      Miễn phí
+    </label>
+  </>
+)}
+
             
             <div className="flex space-x-3">
               <button

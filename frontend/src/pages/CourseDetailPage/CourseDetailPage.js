@@ -22,6 +22,16 @@ export default function CourseVideoPage() {
       });
   }, []);
 
+  const convertYoutubeToEmbed = (url) => {
+  const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w\-]+)/;
+  const match = url.match(regex);
+  if (match && match[1]) {
+    return `https://www.youtube.com/embed/${match[1]}`;
+  }
+  return url; // fallback nếu không phải link hợp lệ
+};
+
+
   const loadLesson = (lessonId) => {
     setLoadingLesson(true);
     fetch(`http://localhost:3000/api/lessons/${lessonId}`)
@@ -84,17 +94,27 @@ export default function CourseVideoPage() {
             <h1 style={{ fontSize: "24px", fontWeight: "bold", marginBottom: "16px" }}>
               {currentLesson.title}
             </h1>
-            <video
-              src={`http://localhost:3000/public/${currentLesson.video_url}`}
-              controls
-              style={{
-                width: "100%",
-                maxWidth: "100%",
-                marginBottom: "16px",
-                borderRadius: "4px",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-              }}
-            />
+            <iframe
+  src={
+    currentLesson.video_url.startsWith("http")
+      ? currentLesson.video_url.includes("youtu")
+        ? convertYoutubeToEmbed(currentLesson.video_url)
+        : currentLesson.video_url
+      : `http://localhost:3000/public/${currentLesson.video_url}`
+  }
+          title="Lesson Video"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          style={{
+            width: "100%",
+            height: "500px",
+            marginBottom: "16px",
+            borderRadius: "4px",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+          }}
+        />
+
             <p style={{ fontSize: "16px", color: "#444" }}>{currentLesson.content}</p>
           </div>
         )}

@@ -16,5 +16,9 @@ router.post('/courses/:id/chapters', verifyAdmin, courseAdminController.addChapt
 
 // Lesson management
 router.post('/chapters/:id/lessons', verifyAdmin, courseAdminController.addLesson);
+router.put('/lessons/:id', verifyAdmin, courseAdminController.updateLesson);
+router.delete('/lessons/:id', verifyAdmin, courseAdminController.deleteLesson);
+
+
 
 module.exports = router;

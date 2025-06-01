@@ -4,11 +4,11 @@ const lessonProgressController = require('../controllers/lessonProgressControlle
 
 
 
-
+//app.use('/api/lesson-progress', lessonProgressRoutes);
 router.post('/update', lessonProgressController.updateLessonProgress);  // Route update tiến độ
 
 // Lấy tiến độ của 1 user
-router.get('/:userId', lessonProgressController.getLessonProgress);
+router.get('/:user_id', lessonProgressController.getLessonProgress);
 
 // Cập nhật hoặc tạo mới tiến độ
 router.post('/', lessonProgressController.updateLessonProgress);

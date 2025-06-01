@@ -62,4 +62,36 @@ const getMyEnrollments = async (req, res) => {
   }
 };
 
-module.exports = { enrollCourse, getMyEnrollments };
+
+// controllers/enrollmentController.js
+
+const getMyCourses = async (req, res) => {
+  const userId = req.user?.user_id;
+
+  if (!userId) {
+    return res.status(400).json({ message: 'Token không chứa user_id' });
+  }
+
+  try {
+    const [courses] = await db.execute(
+      `
+      SELECT c.*, 
+             e.progress, 
+             e.status 
+      FROM enrollments e
+      JOIN courses c ON c.course_id = e.course_id
+      WHERE e.user_id = ?
+      `,
+      [userId]
+    );
+
+    res.status(200).json(courses);
+  } catch (error) {
+    console.error('Lỗi khi lấy khóa học đã tham gia:', error);
+    res.status(500).json({ message: 'Lỗi server' });
+  }
+};
+
+
+
+module.exports = { enrollCourse, getMyEnrollments,getMyCourses };

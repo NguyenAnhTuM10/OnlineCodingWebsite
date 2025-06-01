@@ -1,5 +1,7 @@
 import React, { useEffect, useState,useRef,useCallback   } from "react";
+import { useParams } from 'react-router-dom';
 import { Search, Plus, Edit, Trash2, Eye, BookOpen, FileText, Users } from "lucide-react";
+
 
 // API base URL - thay đổi theo môi trường của bạn
 const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
@@ -103,6 +105,33 @@ const apiService = {
     });
     if (!response.ok) throw new Error('Failed to add lesson');
     return response.json();
+  },
+
+  updateLesson: async (lessonId, lessonData) => {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE}/admin/lessons/${lessonId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(lessonData)
+    });
+    if (!response.ok) throw new Error('Failed to update lesson');
+    return response.json();
+  },
+
+  deleteLesson: async (lessonId) => {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE}/admin/lessons/${lessonId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    if (!response.ok) throw new Error('Failed to delete lesson');
+    return response.json();
   }
 };
 
@@ -120,6 +149,210 @@ const OptimizedAdminPage = () => {
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({});
   
+
+  // State variables you'll need in your component
+const [selectedLesson, setSelectedLesson] = useState(null);
+const [showEditLessonModal, setShowEditLessonModal] = useState(false);
+// const [loading, setLoading] = useState(false);
+
+
+
+const [courseDetails, setCourseDetails] = useState(null);
+
+// Get course ID from URL params (assuming you're using React Router)
+const { courseId } = useParams(); // or however you get the course ID
+
+// Fetch Course Details Function
+const fetchCourseDetails = async () => {
+  try {
+    setLoading(true);
+    setError(null);
+    
+    // Call your API service
+    const response = await apiService.getCourseDetails(courseId);
+    
+    // Update state with fetched data
+    setCourseDetails(response.course);
+    setChapters(response.chapters || []);
+    
+  } catch (error) {
+    console.error('Error fetching course details:', error);
+    setError('Không thể tải thông tin khóa học: ' + error.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
+// Use useEffect to fetch data when component mounts
+useEffect(() => {
+  if (courseId) {
+    fetchCourseDetails();
+  }
+}, [courseId]);
+
+// Updated handler functions with fetchCourseDetails
+const handleDeleteLesson = async (lessonId, lessonTitle) => {
+  const isConfirmed = window.confirm(
+    `Bạn có chắc chắn muốn xóa bài học "${lessonTitle}"?`
+  );
+  
+  if (!isConfirmed) return;
+  
+  try {
+    setLoading(true);
+    await apiService.deleteLesson(lessonId);
+    
+    // Show success message
+    alert('Xóa bài học thành công!');
+    
+    // Refresh course details to update the UI
+    await fetchCourseDetails();
+    
+  } catch (error) {
+    console.error('Error deleting lesson:', error);
+    alert('Có lỗi xảy ra khi xóa bài học: ' + error.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
+// // Option 2: Set selectedLesson first, then call the function
+// const handleEditLesson = async (lesson) => {
+//   try {
+//     // Set the selected lesson first
+    
+//     setSelectedLesson(lesson);
+//     console.log('Selected lesson for edit:', lesson);
+//     // Open the edit modal
+//     setShowEditLessonModal(true);
+//   } catch (error) {
+//     console.error('Error setting lesson for edit:', error);
+//     alert('Có lỗi xảy ra: ' + error.message);
+//   }
+// };
+
+// Then have a separate function for the actual update
+const handleUpdateLesson = async (lessonData) => {
+  if (!selectedLesson) {
+    alert('Không có bài học nào được chọn');
+    return;
+  }
+  
+  try {
+    setLoading(true);
+    await apiService.updateLesson(selectedLesson.lesson_id, lessonData);
+    
+    // Show success message
+    alert('Cập nhật bài học thành công!');
+    
+    // Close modal and refresh data
+    setShowEditLessonModal(false);
+    setSelectedLesson(null);
+    await fetchCourseDetails();
+    
+  } catch (error) {
+    console.error('Error updating lesson:', error);
+    alert('Có lỗi xảy ra khi cập nhật bài học: ' + error.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
+
+// 1. Thêm state cho form data của edit lesson
+const [editLessonFormData, setEditLessonFormData] = useState({
+  title: '',
+  content: '',
+  video_url: '',
+  duration: '',
+  is_free: false,
+  position: '',
+  chapter_id: ''
+});
+
+/// 2. Cập nhật handleEditLesson để set form data
+const handleEditLesson = async (lesson, chapterId = null) => {
+  try {
+    // Tìm chapter_id từ lesson hoặc tham số
+    let lessonChapterId = lesson.chapter_id || chapterId;
+
+    if (!lessonChapterId) {
+      // Nếu vẫn chưa có, tìm chương chứa lesson này
+      const parentChapter = chapters.find(chapter =>
+        chapter.lessons && chapter.lessons.some(l => l.lesson_id === lesson.lesson_id)
+      );
+      lessonChapterId = parentChapter?.chapter_id || '';
+    }
+
+    // Cập nhật selectedLesson có thêm chapter_id (rất quan trọng)
+    const lessonWithChapter = { ...lesson, chapter_id: lessonChapterId };
+    setSelectedLesson(lessonWithChapter);
+
+    // Set form data để hiển thị lên modal
+    setEditLessonFormData({
+      title: lesson.title || '',
+      content: lesson.content || '',
+      video_url: lesson.video_url || '',
+      duration: lesson.duration || '',
+      is_free: Boolean(lesson.is_free),
+      // chapter_id: lessonChapterId
+    });
+    
+
+    // Hiện modal
+    setShowEditLessonModal(true);
+  } catch (error) {
+    console.error('Error setting lesson for edit:', error);
+    alert('Có lỗi xảy ra: ' + error.message);
+  }
+};
+
+
+// 3. Function xử lý thay đổi input trong edit modal
+const handleEditLessonInputChange = (e) => {
+  const { name, value, type, checked } = e.target;
+  setEditLessonFormData(prev => ({
+    ...prev,
+    [name]: type === 'checkbox' ? checked : value
+  }));
+};
+
+//4. Function xử lý submit form edit
+const handleEditLessonSubmit = async (e) => {
+  e.preventDefault();
+  await handleUpdateLesson(editLessonFormData);
+};
+
+
+
+// const handleEditLessonSubmit = async (e) => {
+//   e.preventDefault();
+
+//   const updatedLesson = {
+//     ...editLessonFormData,
+//     position: selectedLesson?.position || 1
+//   };
+
+//   // ❌ Xóa chapter_id để không gửi lên backend
+//   delete updatedLesson.chapter_id;
+
+//   try {
+//     await handleUpdateLesson(selectedLesson.lesson_id, updatedLesson);
+//     setShowEditLessonModal(false);
+//     setSelectedLesson(null);
+//   } catch (err) {
+//     console.error("Update failed:", err);
+//     alert("Cập nhật thất bại: " + err.message);
+//   }
+// };
+
+
+
+
+
+
   const itemsPerPage = 5;
 
   // Load courses on component mount
@@ -246,6 +479,17 @@ const OptimizedAdminPage = () => {
       [name]: value
     }));
   };
+
+
+
+
+
+
+
+
+
+
+  
 
   const Pagination = () => (
     <div className="flex items-center justify-between mt-6">
@@ -457,7 +701,143 @@ const OptimizedAdminPage = () => {
     );
   };
 
+
+
+
+  // 5. Modal component cho chỉnh sửa bài học
+const EditLessonModal = () => {
+  if (!showEditLessonModal || !selectedLesson) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold">Chỉnh Sửa Bài Học</h3>
+          <button 
+            onClick={() => {
+              setShowEditLessonModal(false);
+              setSelectedLesson(null);
+            }} 
+            className="text-gray-500 hover:text-gray-700"
+          >
+            ×
+          </button>
+        </div>
+        
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleEditLessonSubmit} className="space-y-4">
+          {/* Hiển thị thông tin chương (readonly) */}
+          <div className="p-3 bg-gray-100 rounded-lg">
+            <span className="text-sm text-gray-600">Chương: </span>
+            <span className="font-medium">
+              {chapters.find(ch => ch.chapter_id === selectedLesson.chapter_id)?.title || 'Không xác định'}
+            </span>
+          </div>
+
+          {/* Tiêu đề bài học */}
+          <input
+            type="text"
+            name="title"
+            placeholder="Tiêu đề bài học"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={editLessonFormData.title}
+            onChange={handleEditLessonInputChange}
+            required
+          />
+
+          {/* Nội dung */}
+          <textarea
+            name="content"
+            placeholder="Nội dung bài học"
+            rows="4"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={editLessonFormData.content}
+            onChange={handleEditLessonInputChange}
+          />
+
+          {/* URL video */}
+          <input
+            type="url"
+            name="video_url"
+            placeholder="URL video (nếu có)"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={editLessonFormData.video_url}
+            onChange={handleEditLessonInputChange}
+          />
+
+          {/* Thời lượng (giây) */}
+          <input
+            type="number"
+            name="duration"
+            placeholder="Thời lượng (giây)"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={editLessonFormData.duration}
+            onChange={handleEditLessonInputChange}
+            min="0"
+          />
+
+           {/* Nội dung */}
+          <textarea
+            name="position"
+            placeholder="Vi trí bài học (số thứ tự)"
+           
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={editLessonFormData.position || ''}
+            onChange={handleEditLessonInputChange}
+          />
+
+          {/* Checkbox miễn phí */}
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              name="is_free"
+              checked={editLessonFormData.is_free}
+              onChange={handleEditLessonInputChange}
+              className="mr-2"
+            />
+            Miễn phí
+          </label>
+
+          <div className="flex space-x-3">
+            <button
+              type="button"
+              onClick={() => {
+                setShowEditLessonModal(false);
+                setSelectedLesson(null);
+              }}
+              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              disabled={loading}
+            >
+              Hủy
+            </button>
+            <button
+              type="submit"
+              className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
+              disabled={loading}
+            >
+              {loading ? 'Đang cập nhật...' : 'Cập nhật'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+
   const CoursesTab = () => (
+
+ 
+
+
+
+
+
     <div>
       {error && (
         <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
@@ -690,7 +1070,54 @@ const OptimizedAdminPage = () => {
                   </button>
                 </div>
               </div>
+
+
+
+
               <div className="p-4">
+  {chapter.lessons && chapter.lessons.length > 0 ? (
+    <div className="space-y-2">
+      {chapter.lessons.map((lesson, lessonIndex) => (
+        <div key={lesson.lesson_id} className="flex items-center justify-between p-3 bg-gray-50 rounded">
+          <div>
+            <span className="text-sm font-medium">Bài {lessonIndex + 1}: {lesson.title}</span>
+            {lesson.duration && (
+              <span className="ml-2 text-xs text-gray-500">
+                ({Math.floor(lesson.duration / 60)}:{(lesson.duration % 60).toString().padStart(2, '0')})
+              </span>
+            )}
+            {lesson.is_free && (
+              <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                Miễn phí
+              </span>
+            )}
+          </div>
+          <div className="flex space-x-2">
+            <button 
+              className="text-green-600 hover:text-green-800"
+                onClick={() => handleEditLesson(lesson, chapter.chapter_id)}
+              title="Chỉnh sửa bài học"
+            >
+              <Edit className="w-4 h-4" />
+            </button>
+            <button 
+              className="text-red-600 hover:text-red-800"
+              onClick={() => handleDeleteLesson(lesson.lesson_id, lesson.title)}
+              title="Xóa bài học"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  ) : (
+    <p className="text-gray-500 text-sm p-3">Chưa có bài học nào</p>
+  )}
+</div>
+
+
+              {/* <div className="p-4">
                 {chapter.lessons && chapter.lessons.length > 0 ? (
                   <div className="space-y-2">
                     {chapter.lessons.map((lesson, lessonIndex) => (
@@ -719,13 +1146,18 @@ const OptimizedAdminPage = () => {
                       </div>
                     ))}
                   </div>
+
+
+
+
+
                 ) : (
                   <div className="text-center py-6 text-gray-500">
                     <FileText className="mx-auto h-8 w-8 text-gray-400 mb-2" />
                     <p>Chưa có bài học nào trong chương này</p>
                   </div>
                 )}
-              </div>
+              </div> */}
             </div>
           ))}
         </div>
@@ -789,6 +1221,7 @@ const OptimizedAdminPage = () => {
       </div>
 
       <Modal />
+        <EditLessonModal />
     </div>
   );
 };

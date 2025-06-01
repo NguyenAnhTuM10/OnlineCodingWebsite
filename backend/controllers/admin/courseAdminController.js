@@ -260,16 +260,23 @@ exports.getCourseDetails = async (req, res) => {
       ORDER BY ch.position
     `, [id]);
 
+    // Xử lý chapters - lọc bỏ lessons null
+    const processedChapters = chapters.map(chapter => ({
+      ...chapter,
+      lessons: chapter.lessons.filter(lesson => lesson.lesson_id !== null)
+    }));
+
+    // CHỈ CÓ 1 DÒNG res.json()
     res.json({ 
       course: course[0], 
-      chapters: chapters 
+      chapters: processedChapters 
     });
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Lỗi server' });
   }
 };
-
 
 
 
@@ -286,16 +293,23 @@ exports.updateLesson = async (req, res) => {
       return res.status(404).json({ error: 'Không tìm thấy bài học' });
     }
 
-    // Chuyển đổi duration sang số giây nếu cần
-    function timeToSeconds(str) {
-      if (typeof str === 'string' && str.includes(':')) {
-        const [min, sec] = str.split(':').map(Number);
-        return min * 60 + sec;
+    // ✅ Chuyển duration thành số nếu cần (ví dụ "1:30" => 90 hoặc "90" => 90)
+    function timeToSeconds(input) {
+      if (typeof input === 'string') {
+        if (input.includes(':')) {
+          const [min, sec] = input.split(':').map(Number);
+          return min * 60 + sec;
+        } else {
+          const num = Number(input);
+          return isNaN(num) ? null : num;
+        }
+      } else if (typeof input === 'number') {
+        return input;
       }
-      return Number(str); // Nếu đã là số thì dùng luôn
+      return null;
     }
 
-    const durationInSeconds = duration ? timeToSeconds(duration) : null;
+    const durationInSeconds = timeToSeconds(duration);
 
     // Cập nhật bài học
     const [result] = await db.execute(
@@ -315,6 +329,7 @@ exports.updateLesson = async (req, res) => {
     res.status(500).json({ error: 'Lỗi server', message: error.message });
   }
 };
+
 
 exports.deleteLesson = async (req, res) => {
   try {

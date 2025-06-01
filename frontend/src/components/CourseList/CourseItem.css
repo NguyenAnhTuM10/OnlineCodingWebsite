@@ -84,3 +84,36 @@
   margin-right: 4px;
   font-size: 16px;
 }
+
+
+
+
+
+
+
+
+.course-action {
+  margin-top: 1rem;
+}
+
+.enroll-btn {
+  background-color: #27ae60;
+  color: white;
+  padding: 0.4rem 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.enroll-btn:hover {
+  background-color: #219150;
+}
+
+.enrolled-btn {
+  background-color: #95a5a6;
+  color: white;
+  padding: 0.4rem 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: not-allowed;
+}

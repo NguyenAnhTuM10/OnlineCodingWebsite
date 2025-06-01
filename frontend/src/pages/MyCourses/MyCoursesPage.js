@@ -38,7 +38,8 @@ function MyCourses() {
       <div className="courses-grid">
         {courses.map(course => (
           <Link to={`/courses/${course.slug}`} className="course-item" key={course.course_id}>
-            <img src={course.thumbnail_url} alt={course.title} />
+            {/* <img src={course.thumbnail_url} alt={course.title} /> */}
+            <img src={`http://localhost:3000/public${course.thumbnail_url}`} alt={course.title} />
             <div className="course-info">
               <h3>{course.title}</h3>
               <p>Tiến độ: {course.progress}%</p>
